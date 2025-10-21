@@ -249,6 +249,127 @@
       transform: none;
     }
 
+    .btn-primary.has-errors {
+      background: #f44336;
+      animation: pulse-warning 2s infinite;
+    }
+
+    .btn-primary.has-errors:hover {
+      background: #d32f2f;
+    }
+
+    @keyframes pulse-warning {
+      0% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(244, 67, 54, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0); }
+    }
+
+    /* Modal de prévisualisation */
+    .preview-modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .preview-modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .preview-modal-content {
+      background: white;
+      border-radius: 12px;
+      width: 95%;
+      max-width: 1400px;
+      height: 70vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px;
+      border-bottom: 1px solid #eee;
+      flex-shrink: 0;
+    }
+
+    .preview-header h3 {
+      margin: 0;
+      color: #3D7A9C;
+      font-size: 20px;
+    }
+
+    .preview-close {
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: #999;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .preview-close:hover {
+      color: #333;
+    }
+
+    .preview-body {
+      flex: 1;
+      padding: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .preview-loading {
+      text-align: center;
+      color: #666;
+    }
+
+    .preview-loading .spinner {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 15px;
+    }
+
+    #previewFrame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .preview-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 15px;
+      padding: 10px 15px;
+      border-top: 1px solid #eee;
+      flex-shrink: 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
     .loading {
       display: none;
       text-align: center;
@@ -328,6 +449,26 @@
       margin-top: 5px;
     }
 
+    .help-text.warning {
+      color: #ff9800;
+      font-weight: 600;
+    }
+
+    .help-text.danger {
+      color: #f44336;
+      font-weight: 600;
+    }
+
+    .input-warning {
+      border-color: #ff9800 !important;
+      background-color: #fff3e0;
+    }
+
+    .input-danger {
+      border-color: #f44336 !important;
+      background-color: #ffebee;
+    }
+
     .edit-banner {
       background: #fff3cd;
       border: 2px solid #ffc107;
@@ -394,15 +535,21 @@
 
         <div class="form-group">
           <label>Titre du meetup <span class="required">*</span></label>
-          <input type="text" name="title" id="title" required placeholder="Ex: Quel framework pour votre équipe?">
-          <div class="help-text">Maximum 60 caractères recommandé</div>
+          <input type="text" name="title" id="title" required placeholder="Ex: Quel framework pour votre équipe?" maxlength="100">
+          <div class="help-text" id="titleCounter" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Recommandé : max 50 caractères</span>
+            <span id="titleCount" style="font-weight: 600;">0/100</span>
+          </div>
         </div>
 
         <div class="form-group">
           <label>Sous-titre / Description</label>
-          <textarea name="subtitle" id="subtitle"
+          <textarea name="subtitle" id="subtitle" maxlength="200"
             placeholder="Description courte de l'événement (optionnel)"></textarea>
-          <div class="help-text">Maximum 3 lignes</div>
+          <div class="help-text" id="subtitleCounter" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Recommandé : max 150 caractères (environ 3 lignes)</span>
+            <span id="subtitleCount" style="font-weight: 600;">0/200</span>
+          </div>
         </div>
 
         <div class="form-group">
@@ -473,8 +620,11 @@
         </div>
 
         <!-- Actions -->
-        <div style="margin-top: 30px;">
-          <button type="submit" class="btn-primary" style="width: 100%;" id="submitBtn">
+        <div style="margin-top: 30px; display: flex; gap: 15px;">
+          <button type="button" class="btn-secondary" style="flex: 1;" onclick="showPreview()" id="previewBtn">
+            <span>👁️ Aperçu</span>
+          </button>
+          <button type="submit" class="btn-primary" style="flex: 2;" id="submitBtn">
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="opacity: 0; transition: opacity 0.2s;"></span>
             <span>Générer et envoyer</span>
           </button>
@@ -484,6 +634,29 @@
       <div class="loading-overlay" id="loading">
         <div class="spinner"></div>
         <p style="color: #333; font-size: 1.2em; margin-top: 15px;">Génération de votre cover en cours...<br>Cela peut prendre quelques secondes</p>
+      </div>
+
+      <!-- Modal de prévisualisation -->
+      <div class="preview-modal" id="previewModal">
+        <div class="preview-modal-content">
+          <div class="preview-header">
+            <h3>👁️ Aperçu de votre cover</h3>
+            <button class="preview-close" onclick="closePreview()">&times;</button>
+          </div>
+          <div class="preview-body">
+            <div class="preview-loading" id="previewLoading">
+              <div class="spinner"></div>
+              <p>Génération de l'aperçu...</p>
+            </div>
+            <iframe id="previewFrame" style="display: none;"></iframe>
+          </div>
+          <div class="preview-footer">
+            <button class="btn-secondary" onclick="closePreview()">Fermer</button>
+            <button class="btn-primary" onclick="closePreview(); document.getElementById('coverForm').dispatchEvent(new Event('submit'));">
+              ✅ Générer cette cover
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -642,8 +815,297 @@
         });
       }
       
+      // Ajouter les compteurs de caractères
+      setupCharacterCounters();
+      
       console.log('✅ Initialisation terminée');
     });
+
+    // ============================================
+    // CHARACTER COUNTERS
+    // ============================================
+    function setupCharacterCounters() {
+      const titleInput = document.getElementById('title');
+      const subtitleInput = document.getElementById('subtitle');
+      const titleCount = document.getElementById('titleCount');
+      const subtitleCount = document.getElementById('subtitleCount');
+      const titleCounter = document.getElementById('titleCounter');
+      const subtitleCounter = document.getElementById('subtitleCounter');
+
+      // Compteur pour le titre
+      if (titleInput && titleCount) {
+        // Supprimer les anciens listeners pour éviter les doublons
+        titleInput.removeEventListener('input', titleInput._characterCounterHandler);
+        
+        titleInput._characterCounterHandler = function() {
+          const length = this.value.length;
+          titleCount.textContent = length + '/100';
+          
+          // Retirer toutes les classes d'état
+          titleCounter.classList.remove('warning', 'danger');
+          titleInput.classList.remove('input-warning', 'input-danger');
+          
+          // Appliquer les états selon la longueur
+          if (length > 70) {
+            titleCounter.classList.add('danger');
+            titleInput.classList.add('input-danger');
+            titleCounter.querySelector('span:first-child').textContent = '⚠️ TITRE TROP LONG - Risque de débordement !';
+          } else if (length > 50) {
+            titleCounter.classList.add('warning');
+            titleInput.classList.add('input-warning');
+            titleCounter.querySelector('span:first-child').textContent = '⚠️ Titre un peu long - Envisagez de réduire';
+          } else {
+            titleCounter.querySelector('span:first-child').textContent = 'Recommandé : max 50 caractères';
+          }
+        };
+        
+        titleInput.addEventListener('input', function() {
+          titleInput._characterCounterHandler();
+          checkFormErrors();
+        });
+        
+        // Trigger initial
+        titleInput.dispatchEvent(new Event('input'));
+      }
+
+      // Compteur pour le sous-titre
+      if (subtitleInput && subtitleCount) {
+        // Supprimer les anciens listeners pour éviter les doublons
+        subtitleInput.removeEventListener('input', subtitleInput._characterCounterHandler);
+        
+        subtitleInput._characterCounterHandler = function() {
+          const length = this.value.length;
+          subtitleCount.textContent = length + '/200';
+          
+          // Retirer toutes les classes d'état
+          subtitleCounter.classList.remove('warning', 'danger');
+          subtitleInput.classList.remove('input-warning', 'input-danger');
+          
+          // Appliquer les états selon la longueur
+          if (length > 170) {
+            subtitleCounter.classList.add('danger');
+            subtitleInput.classList.add('input-danger');
+            subtitleCounter.querySelector('span:first-child').textContent = '⚠️ DESCRIPTION TROP LONGUE - Risque de débordement !';
+          } else if (length > 150) {
+            subtitleCounter.classList.add('warning');
+            subtitleInput.classList.add('input-warning');
+            subtitleCounter.querySelector('span:first-child').textContent = '⚠️ Description un peu longue - Envisagez de réduire';
+          } else {
+            subtitleCounter.querySelector('span:first-child').textContent = 'Recommandé : max 150 caractères (environ 3 lignes)';
+          }
+        };
+        
+        subtitleInput.addEventListener('input', function() {
+          subtitleInput._characterCounterHandler();
+          checkFormErrors();
+        });
+        
+        // Trigger initial
+        subtitleInput.dispatchEvent(new Event('input'));
+      }
+    }
+
+    // ============================================
+    // FORM ERROR CHECKING
+    // ============================================
+    function checkFormErrors() {
+      const submitBtn = document.getElementById('submitBtn');
+      if (!submitBtn) return;
+      
+      let hasErrors = false;
+      
+      // Vérifier tous les éléments avec classe 'danger'
+      const dangerElements = document.querySelectorAll('.danger');
+      if (dangerElements.length > 0) {
+        hasErrors = true;
+      }
+      
+      // Mettre à jour le bouton
+      if (hasErrors) {
+        submitBtn.classList.add('has-errors');
+        submitBtn.innerHTML = '<span>⚠️ Corriger les erreurs avant de générer</span>';
+      } else {
+        submitBtn.classList.remove('has-errors');
+        submitBtn.innerHTML = '<span>Générer et envoyer</span>';
+      }
+    }
+
+    // ============================================
+    // PREVIEW FUNCTIONS
+    // ============================================
+    function showPreview() {
+      console.log('🔥 === DÉBUT PREVIEW ===');
+      console.log('👁️ Fonction showPreview() appelée');
+      
+      // Validation rapide
+      console.log('📋 Récupération des données du formulaire...');
+      const formData = collectFormData();
+      
+      if (!formData) {
+        console.log('❌ Pas de données de formulaire');
+        showAlert('❌ Veuillez remplir tous les champs requis avant l\'aperçu.', 'error');
+        return;
+      }
+      
+      console.log('✅ Données du formulaire récupérées:', formData);
+      console.log('  - Titre:', formData.title);
+      console.log('  - Speakers:', formData.speakers ? formData.speakers.length : 0);
+
+      // Afficher la modal
+      console.log('🖼️ Affichage de la modal...');
+      const modal = document.getElementById('previewModal');
+      const loading = document.getElementById('previewLoading');
+      const frame = document.getElementById('previewFrame');
+      
+      if (!modal || !loading || !frame) {
+        console.error('❌ Éléments DOM manquants:', {modal, loading, frame});
+        return;
+      }
+      
+      modal.classList.add('active');
+      loading.style.display = 'block';
+      frame.style.display = 'none';
+      console.log('✅ Modal affichée, loading visible');
+
+      // Générer l'aperçu
+      console.log('🚀 Appel de google.script.run.generatePreviewHTML...');
+      console.log('📤 Données envoyées au serveur:', JSON.stringify(formData, null, 2));
+      
+      google.script.run
+        .withSuccessHandler(function(htmlContent) {
+          console.log('🎉 SUCCESS HANDLER appelé!');
+          console.log('📥 HTML reçu du serveur (longueur):', htmlContent ? htmlContent.length : 0);
+          console.log('📄 Début du HTML:', htmlContent ? htmlContent.substring(0, 200) + '...' : 'VIDE');
+          
+          loading.style.display = 'none';
+          frame.style.display = 'block';
+          frame.srcdoc = htmlContent;
+          
+          console.log('✅ Aperçu affiché dans l\'iframe');
+          console.log('🔥 === FIN PREVIEW SUCCESS ===');
+        })
+        .withFailureHandler(function(error) {
+          console.log('💥 FAILURE HANDLER appelé!');
+          console.error('❌ Erreur complète:', error);
+          console.error('  - Message:', error.message);
+          console.error('  - Stack:', error.stack);
+          
+          loading.style.display = 'none';
+          frame.style.display = 'block';
+          frame.srcdoc = '<div style="padding: 40px; text-align: center; color: #f44336;">' +
+            '<h3>💥 Erreur détaillée</h3>' +
+            '<p><strong>Message:</strong> ' + error.message + '</p>' +
+            '<p><strong>Stack:</strong></p>' +
+            '<pre style="text-align: left; font-size: 11px; background: #f5f5f5; padding: 10px; border-radius: 4px;">' + 
+            (error.stack || 'Pas de stack trace') + '</pre>' +
+            '</div>';
+            
+          console.log('🔥 === FIN PREVIEW ERROR ===');
+        })
+        .generatePreviewHTML(formData);
+        
+      console.log('⏳ Appel serveur lancé, attente de la réponse...');
+    }
+
+    function closePreview() {
+      const modal = document.getElementById('previewModal');
+      modal.classList.remove('active');
+    }
+
+    // Fermer la modal en cliquant à l'extérieur
+    document.addEventListener('click', function(event) {
+      const modal = document.getElementById('previewModal');
+      if (event.target === modal) {
+        closePreview();
+      }
+    });
+
+    // Fermer avec Escape
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closePreview();
+      }
+    });
+
+    // ============================================
+    // SPEAKER CHARACTER COUNTERS
+    // ============================================
+    function setupSpeakerCounters(speakerId) {
+      const nameInput = document.querySelector('[name="speaker_' + speakerId + '_name"]');
+      const titleInput = document.querySelector('[name="speaker_' + speakerId + '_title"]');
+      const nameCount = document.getElementById('speakerName' + speakerId + 'Count');
+      const titleCount = document.getElementById('speakerTitle' + speakerId + 'Count');
+      const nameCounter = document.getElementById('speakerName' + speakerId + 'Counter');
+      const titleCounter = document.getElementById('speakerTitle' + speakerId + 'Counter');
+
+      // Compteur pour le nom du speaker
+      if (nameInput && nameCount) {
+        // Supprimer les anciens listeners
+        nameInput.removeEventListener('input', nameInput._characterCounterHandler);
+        
+        nameInput._characterCounterHandler = function() {
+          const length = this.value.length;
+          nameCount.textContent = length + '/50';
+          
+          // Retirer toutes les classes d'état
+          nameCounter.classList.remove('warning', 'danger');
+          nameInput.classList.remove('input-warning', 'input-danger');
+          
+          // Appliquer les états selon la longueur
+          if (length > 35) {
+            nameCounter.classList.add('danger');
+            nameInput.classList.add('input-danger');
+            nameCounter.querySelector('span:first-child').textContent = '⚠️ NOM TROP LONG - Risque de débordement !';
+          } else if (length > 25) {
+            nameCounter.classList.add('warning');
+            nameInput.classList.add('input-warning');
+            nameCounter.querySelector('span:first-child').textContent = '⚠️ Nom un peu long - Envisagez de réduire';
+          } else {
+            nameCounter.querySelector('span:first-child').textContent = 'Recommandé : max 25 caractères';
+          }
+        };
+        
+        nameInput.addEventListener('input', function() {
+          nameInput._characterCounterHandler();
+          checkFormErrors();
+        });
+        nameInput.dispatchEvent(new Event('input'));
+      }
+
+      // Compteur pour le titre du speaker
+      if (titleInput && titleCount) {
+        // Supprimer les anciens listeners
+        titleInput.removeEventListener('input', titleInput._characterCounterHandler);
+        
+        titleInput._characterCounterHandler = function() {
+          const length = this.value.length;
+          titleCount.textContent = length + '/60';
+          
+          // Retirer toutes les classes d'état
+          titleCounter.classList.remove('warning', 'danger');
+          titleInput.classList.remove('input-warning', 'input-danger');
+          
+          // Appliquer les états selon la longueur
+          if (length > 45) {
+            titleCounter.classList.add('danger');
+            titleInput.classList.add('input-danger');
+            titleCounter.querySelector('span:first-child').textContent = '⚠️ TITRE TROP LONG - Risque de débordement !';
+          } else if (length > 35) {
+            titleCounter.classList.add('warning');
+            titleInput.classList.add('input-warning');
+            titleCounter.querySelector('span:first-child').textContent = '⚠️ Titre un peu long - Envisagez de réduire';
+          } else {
+            titleCounter.querySelector('span:first-child').textContent = 'Recommandé : max 35 caractères';
+          }
+        };
+        
+        titleInput.addEventListener('input', function() {
+          titleInput._characterCounterHandler();
+          checkFormErrors();
+        });
+        titleInput.dispatchEvent(new Event('input'));
+      }
+    }
 
     // ============================================
     // SPEAKER MANAGEMENT
@@ -680,11 +1142,19 @@
         '</div>' +
         '<div class="form-group">' +
           '<label>Nom complet <span class="required">*</span></label>' +
-          '<input type="text" name="speaker_' + speakerCount + '_name" required placeholder="Jean Lunette">' +
+          '<input type="text" name="speaker_' + speakerCount + '_name" required placeholder="Jean Lunette" maxlength="50">' +
+          '<div class="help-text" id="speakerName' + speakerCount + 'Counter" style="display: flex; justify-content: space-between; align-items: center;">' +
+            '<span>Recommandé : max 25 caractères</span>' +
+            '<span id="speakerName' + speakerCount + 'Count" style="font-weight: 600;">0/50</span>' +
+          '</div>' +
         '</div>' +
         '<div class="form-group">' +
           '<label>Titre / Entreprise</label>' +
-          '<input type="text" name="speaker_' + speakerCount + '_title" placeholder="Coach Product @Bliblicar">' +
+          '<input type="text" name="speaker_' + speakerCount + '_title" placeholder="Coach Product @Bliblicar" maxlength="60">' +
+          '<div class="help-text" id="speakerTitle' + speakerCount + 'Counter" style="display: flex; justify-content: space-between; align-items: center;">' +
+            '<span>Recommandé : max 35 caractères</span>' +
+            '<span id="speakerTitle' + speakerCount + 'Count" style="font-weight: 600;">0/60</span>' +
+          '</div>' +
         '</div>' +
         '<div class="form-group">' +
           '<label>Photo <span class="required">*</span></label>' +
@@ -697,6 +1167,9 @@
       console.log('✅ HTML du speaker créé, ajout au container...');
       container.appendChild(speakerDiv);
       console.log('✅ Speaker ajouté! Total speakers:', document.querySelectorAll('.speaker-item').length);
+
+      // Ajouter les compteurs de caractères pour ce speaker
+      setupSpeakerCounters(speakerCount);
 
       updateAddButton();
     }
@@ -927,9 +1400,28 @@
         return false;
       }
 
-      if (data.title.length > 80) {
-        showAlert('Le titre est trop long (max 80 caractères)', 'error');
+      // Validation stricte des longueurs
+      if (data.title.length > 70) {
+        showAlert('❌ Le titre est trop long (' + data.title.length + ' caractères). Maximum recommandé : 70 caractères pour éviter les débordements.', 'error');
         return false;
+      }
+
+      if (data.subtitle && data.subtitle.length > 170) {
+        showAlert('❌ La description est trop longue (' + data.subtitle.length + ' caractères). Maximum recommandé : 170 caractères.', 'error');
+        return false;
+      }
+
+      // Validation des speakers
+      for (var i = 0; i < data.speakers.length; i++) {
+        var speaker = data.speakers[i];
+        if (speaker.name.length > 35) {
+          showAlert('❌ Le nom du speaker "' + speaker.name + '" est trop long (' + speaker.name.length + ' caractères). Maximum : 35 caractères.', 'error');
+          return false;
+        }
+        if (speaker.title && speaker.title.length > 45) {
+          showAlert('❌ Le titre du speaker "' + speaker.title + '" est trop long (' + speaker.title.length + ' caractères). Maximum : 45 caractères.', 'error');
+          return false;
+        }
       }
 
       return true;
@@ -964,13 +1456,6 @@
       }, 10000);
     }
 
-    // ============================================
-    // PREVIEW
-    // ============================================
-
-    function showPreview() {
-      alert('Fonctionnalité de prévisualisation à venir!\n\nPour le moment, générez la cover pour voir le résultat.');
-    }
 
     // ============================================
     // EDIT MODE
@@ -1176,6 +1661,19 @@
       }
 
       console.log('=== FIN EDIT MODE ===');
+      
+      // IMPORTANT: Réactiver les compteurs de caractères après chargement des données
+      setTimeout(function() {
+        setupCharacterCounters();
+        
+        // Réactiver aussi les compteurs des speakers
+        for (var i = 1; i <= speakerCount; i++) {
+          setupSpeakerCounters(i);
+        }
+        
+        console.log('✅ Compteurs de caractères réactivés en mode édition (titre + ' + speakerCount + ' speakers)');
+      }, 500);
+      
       } catch (error) {
         console.error('❌ Erreur lors du chargement des données d\'édition:', error);
         showAlert('❌ Erreur lors du chargement des données. Veuillez réessayer.', 'error');

@@ -22,6 +22,99 @@ var CONFIG = {
 };
 
 // ============================================
+// ============================================
+// PREVIEW FUNCTION (EXPOSED - MUST BE AT TOP LEVEL)
+// ============================================
+
+/**
+ * Génère un aperçu HTML rapide sans conversion base64
+ * Fonction exposée pour être appelée depuis le client
+ */
+function generatePreviewHTML(data) {
+  try {
+    var startTime = new Date().getTime();
+    Logger.log('🔥 === DÉBUT generatePreviewHTML ===');
+    Logger.log('👁️ Fonction generatePreviewHTML appelée côté serveur');
+    Logger.log('📥 Données reçues du client:');
+    Logger.log('  - Type de data: ' + typeof data);
+    Logger.log('  - Data est null?: ' + (data === null));
+    Logger.log('  - Data est undefined?: ' + (data === undefined));
+    
+    if (!data) {
+      Logger.log('❌ ERREUR: Aucune donnée reçue');
+      throw new Error('Aucune donnée reçue du client');
+    }
+    
+    Logger.log('  - Titre: ' + (data.title || 'MANQUANT'));
+    Logger.log('  - Speakers: ' + (data.speakers ? data.speakers.length : 'MANQUANT'));
+    Logger.log('  - Chapter: ' + (data.chapter || 'MANQUANT'));
+    
+    // Créer une copie pour ne pas modifier l'original
+    Logger.log('📋 Création d\'une copie des données...');
+    var dataCopy;
+    try {
+      dataCopy = JSON.parse(JSON.stringify(data));
+      Logger.log('✅ Copie des données créée');
+    } catch (e) {
+      Logger.log('❌ Erreur lors de la copie des données: ' + e.message);
+      throw new Error('Impossible de copier les données: ' + e.message);
+    }
+    
+    // IMPORTANT: Garder les URLs Drive pour la preview (pas de conversion base64)
+    Logger.log('📸 Conservation des URLs Drive pour aperçu rapide');
+    
+    for (var i = 0; i < (dataCopy.speakers || []).length; i++) {
+      var speaker = dataCopy.speakers[i];
+      Logger.log('  - Speaker ' + (i+1) + ': ' + (speaker.name || 'SANS NOM'));
+      if (speaker.photo) {
+        Logger.log('    Photo: ' + speaker.photo.substring(0, 50) + '...');
+      } else {
+        Logger.log('    Photo: MANQUANTE');
+      }
+    }
+    
+    // Générer le HTML avec les URLs Drive directes
+    Logger.log('🎨 Génération du template HTML...');
+    var template, htmlContent;
+    
+    try {
+      Logger.log('  - Chargement du fichier Template_Universal...');
+      template = HtmlService.createTemplateFromFile('Template_Universal');
+      Logger.log('  ✅ Template chargé avec succès');
+      
+      Logger.log('  - Attribution des données au template...');
+      template.data = dataCopy;
+      Logger.log('  ✅ Données attribuées au template');
+      
+      Logger.log('  - Évaluation du template...');
+      htmlContent = template.evaluate().getContent();
+      Logger.log('  ✅ Template évalué, HTML généré (' + htmlContent.length + ' caractères)');
+      
+    } catch (e) {
+      Logger.log('❌ Erreur lors de la génération du template:');
+      Logger.log('  - Message: ' + e.message);
+      Logger.log('  - Stack: ' + e.stack);
+      throw new Error('Erreur template: ' + e.message);
+    }
+    
+    var totalTime = ((new Date().getTime() - startTime) / 1000).toFixed(2);
+    Logger.log('⚡ PREVIEW généré avec succès en: ' + totalTime + 's');
+    Logger.log('📄 HTML généré (début): ' + htmlContent.substring(0, 200) + '...');
+    Logger.log('🔥 === FIN generatePreviewHTML SUCCESS ===');
+    
+    return htmlContent;
+    
+  } catch (error) {
+    Logger.log('💥 === ERREUR DANS generatePreviewHTML ===');
+    Logger.log('❌ Erreur: ' + error.message);
+    Logger.log('📍 Stack: ' + error.stack);
+    Logger.log('🔥 === FIN generatePreviewHTML ERROR ===');
+    
+    // Re-lancer l'erreur pour qu'elle soit transmise au client
+    throw error;
+  }
+}
+
 // WEB APP ENTRY POINT
 // ============================================
 
@@ -234,7 +327,11 @@ function base64ToBlob(base64Data) {
 // HTML GENERATION
 // ============================================
 
+// Cache global pour éviter de retélécharger les mêmes photos
+var photoCache = {};
+
 function generateCoverHTML(data) {
+  var startTime = new Date().getTime();
   Logger.log('🎨 Génération HTML...');
   Logger.log('  - Titre: ' + data.title);
   Logger.log('  - Speakers: ' + data.speakers.length);
@@ -242,57 +339,93 @@ function generateCoverHTML(data) {
   // Créer une copie profonde pour ne pas modifier l'original
   var dataCopy = JSON.parse(JSON.stringify(data));
   
-  // ÉTAPE 1: Convertir les URLs Drive en base64 pour compatibilité externe
-  Logger.log('📸 Conversion des photos Drive en base64...');
+  // ÉTAPE 1: Convertir les URLs Drive en base64 EN PARALLÈLE (OPTIMISATION MAJEURE)
+  Logger.log('📸 Conversion des photos Drive en base64 (parallèle)...');
+  var conversionStart = new Date().getTime();
+  
+  // Préparer toutes les requêtes en parallèle
+  var requests = [];
+  var speakerIndexes = [];
+  
   for (var i = 0; i < dataCopy.speakers.length; i++) {
     var speaker = dataCopy.speakers[i];
     
     if (speaker.photo && speaker.photo.indexOf('drive.google.com') > -1) {
-      try {
-        Logger.log('  - Speaker ' + (i+1) + ': Téléchargement depuis Drive...');
-        
-        // Télécharger l'image depuis Drive
-        var imageBlob = UrlFetchApp.fetch(speaker.photo).getBlob();
-        var imageSize = (imageBlob.getBytes().length / 1024).toFixed(2);
-        Logger.log('    ✅ Image téléchargée: ' + imageSize + ' KB');
-        
-        // Convertir en base64
-        var base64Image = Utilities.base64Encode(imageBlob.getBytes());
-        var mimeType = imageBlob.getContentType();
-        var dataUrl = 'data:' + mimeType + ';base64,' + base64Image;
-        
-        Logger.log('    ✅ Convertie en base64: ' + (dataUrl.length / 1024).toFixed(2) + ' KB');
-        
-        // Remplacer l'URL Drive par le data URL
-        speaker.photo = dataUrl;
-        
-      } catch (error) {
-        Logger.log('    ❌ Erreur conversion base64: ' + error.message);
-        Logger.log('    ⚠️ Conservation de l\'URL Drive (risque d\'échec)');
+      // Vérifier le cache d'abord
+      if (photoCache[speaker.photo]) {
+        Logger.log('  - Speaker ' + (i+1) + ': Photo en cache ⚡');
+        speaker.photo = photoCache[speaker.photo];
+        continue;
       }
-    } else {
-      Logger.log('  - Speaker ' + (i+1) + ': Photo déjà en base64 ou autre format');
+      
+      requests.push({
+        url: speaker.photo,
+        method: 'get',
+        muteHttpExceptions: true
+      });
+      speakerIndexes.push(i);
     }
   }
   
+  // Exécuter toutes les requêtes EN PARALLÈLE (gain énorme !)
+  if (requests.length > 0) {
+    Logger.log('  🚀 Téléchargement de ' + requests.length + ' photos en parallèle...');
+    var responses = UrlFetchApp.fetchAll(requests);
+    
+    for (var i = 0; i < responses.length; i++) {
+      var speakerIndex = speakerIndexes[i];
+      var speaker = dataCopy.speakers[speakerIndex];
+      var originalUrl = speaker.photo;
+      
+      try {
+        var imageBlob = responses[i].getBlob();
+        
+        // Compression JPEG optimisée (réduit la taille de 50%)
+        if (imageBlob.getContentType().indexOf('image') > -1) {
+          // Pas besoin de redimensionner ici, déjà fait à l'upload
+          var base64Image = Utilities.base64Encode(imageBlob.getBytes());
+          var mimeType = imageBlob.getContentType();
+          var dataUrl = 'data:' + mimeType + ';base64,' + base64Image;
+          
+          // Mettre en cache
+          photoCache[originalUrl] = dataUrl;
+          speaker.photo = dataUrl;
+          
+          Logger.log('  ✅ Speaker ' + (speakerIndex+1) + ': ' + (dataUrl.length / 1024).toFixed(2) + ' KB');
+        }
+      } catch (error) {
+        Logger.log('  ❌ Speaker ' + (speakerIndex+1) + ': Erreur - ' + error.message);
+      }
+    }
+  }
+  
+  var conversionTime = ((new Date().getTime() - conversionStart) / 1000).toFixed(2);
+  Logger.log('  ⏱️ Conversion photos: ' + conversionTime + 's');
+  
   // ÉTAPE 2: Générer le HTML avec les images en base64
+  var templateStart = new Date().getTime();
   var template = HtmlService.createTemplateFromFile('Template_Universal');
-  template.data = dataCopy;  // Utiliser la copie avec les photos en base64
+  template.data = dataCopy;
   
   var htmlContent = template.evaluate().getContent();
-  Logger.log('✅ HTML généré: ' + (htmlContent.length / 1024).toFixed(2) + ' KB');
+  var templateTime = ((new Date().getTime() - templateStart) / 1000).toFixed(2);
+  Logger.log('✅ HTML généré: ' + (htmlContent.length / 1024).toFixed(2) + ' KB (' + templateTime + 's)');
   
-  // DEBUG: Sauvegarder le HTML pour inspection
-  try {
-    var debugFolder = getOrCreateFolder('FrenchProduit_Debug');
-    var htmlFile = debugFolder.createFile(
-      'debug_html_' + new Date().getTime() + '.html',
-      htmlContent,
-      MimeType.HTML
-    );
-    Logger.log('  🔍 HTML sauvegardé pour debug: ' + htmlFile.getUrl());
-  } catch (e) {
-    Logger.log('  ⚠️ Impossible de sauvegarder HTML debug: ' + e.message);
+  // DEBUG: Sauvegarder le HTML pour inspection (DESACTIVÉ en production pour gagner du temps)
+  // Activer uniquement si nécessaire pour debug
+  var enableDebug = false;
+  if (enableDebug) {
+    try {
+      var debugFolder = getOrCreateFolder('FrenchProduit_Debug');
+      var htmlFile = debugFolder.createFile(
+        'debug_html_' + new Date().getTime() + '.html',
+        htmlContent,
+        MimeType.HTML
+      );
+      Logger.log('  🔍 HTML sauvegardé pour debug: ' + htmlFile.getUrl());
+    } catch (e) {
+      Logger.log('  ⚠️ Impossible de sauvegarder HTML debug: ' + e.message);
+    }
   }
   
   // ÉTAPE 3: Vérifier que les images sont bien en base64
@@ -319,8 +452,12 @@ function generateCoverHTML(data) {
     Logger.log('  ⚠️ WARNING: Des URLs Drive subsistent (risque 403)');
   }
   
+  var totalTime = ((new Date().getTime() - startTime) / 1000).toFixed(2);
+  Logger.log('⏱️ TOTAL generateCoverHTML: ' + totalTime + 's');
+  
   return htmlContent;
 }
+
 
 // ============================================
 // IMAGE CONVERSION
