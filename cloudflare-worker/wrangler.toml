@@ -1,0 +1,10 @@
+name = "cover-generator"
+main = "src/index.js"
+compatibility_date = "2024-10-01"
+
+browser = { binding = "BROWSER" }
+
+[env.production]
+routes = [
+  { pattern = "cover.frenchproduit.com/*", zone_name = "frenchproduit.com" }
+]

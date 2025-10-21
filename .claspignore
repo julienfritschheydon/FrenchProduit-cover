@@ -1,0 +1,36 @@
+# Documentation
+*.md
+CHANGELOG.md
+README.md
+DEPLOYMENT_GUIDE.md
+GOOGLE_CLOUD_SETUP.md
+AIRTABLE_INTEGRATION.md
+SUMMARY.md
+CHAPITRES.md
+
+# Dossiers externes
+cloud-function/**
+cloudflare-worker/**
+tests/**
+docs/**
+.vscode/**
+
+# Images et assets
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Configuration Git
+.gitignore
+.git/**
+
+# Configuration clasp
+.clasp.json
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+node_modules/**
+package.json
+package-lock.json

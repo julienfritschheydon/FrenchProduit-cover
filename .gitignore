@@ -1,0 +1,26 @@
+# Credentials et fichiers sensibles
+CREDENTIALS.md
+*.key
+*.pem
+.env
+.env.local
+
+# Fichiers temporaires
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
+
+# Node modules (si Cloud Function)
+node_modules/
+package-lock.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Backup files
+*.bak
+*~

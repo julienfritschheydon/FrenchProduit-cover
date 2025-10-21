@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Générateur Cover Meetup - FrenchProduit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', Arial, sans-serif;
+      background: linear-gradient(135deg, #3D7A9C 0%, #E16861 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #3D7A9C 0%, #2a5a73 100%);
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .form-content {
+      padding: 40px;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #333;
+      font-size: 14px;
+    }
+
+    label .required {
+      color: #E16861;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="url"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: 'Poppins', Arial, sans-serif;
+      transition: border-color 0.3s;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #3D7A9C;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .speakers-section {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+    }
+
+    .speaker-item {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      border: 2px solid #e0e0e0;
+      display: block;
+      width: 100%;
+    }
+    
+    .speaker-item .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .speaker-item .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .speaker-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .speaker-header .speaker-number {
+      font-weight: bold;
+      color: #3D7A9C;
+      font-size: 16px;
+    }
+    
+    .btn-remove-speaker {
+      background: #ffebee;
+      color: #c62828;
+      border: 1px solid #ffcdd2;
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-remove-speaker:hover {
+      background: #ffcdd2;
+    }
+
+    .speaker-number {
+      font-weight: 700;
+      color: #3D7A9C;
+      font-size: 16px;
+    }
+
+    .btn-remove-speaker {
+      background: #ff4444;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .btn-remove-speaker:hover {
+      background: #cc0000;
+    }
+
+    .btn-add-speaker {
+      background: #E16861;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .btn-add-speaker:hover {
+      background: #c94d46;
+    }
+
+    .btn-add-speaker:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 16px 32px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: 'Poppins', Arial, sans-serif;
+    }
+
+    .btn-primary {
+      background: #3D7A9C;
+      color: white;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: 500;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+    }
+
+    .btn-primary:hover {
+      background: #2a5a73;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(61, 122, 156, 0.3);
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+
+    .loading.active {
+      display: block;
+    }
+
+    /* Overlay de chargement */
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    
+    .loading-overlay.active {
+      display: flex;
+    }
+    
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #3D7A9C;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .alert {
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .alert.active {
+      display: block;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .help-text {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+
+    .edit-banner {
+      background: #fff3cd;
+      border: 2px solid #ffc107;
+      padding: 15px 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .edit-banner.active {
+      display: block;
+    }
+
+    .edit-banner strong {
+      color: #856404;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎨 Générateur Cover Meetup</h1>
+      <p>FrenchProduit - Créez et modifiez votre cover à volonté.</p>
+      
+      <!-- Bouton de test en mode développement -->
+      <div id="devTools" style="margin-top: 20px; display: none;">
+        <button id="testEditMode" class="btn-secondary" style="font-size: 12px; padding: 5px 10px;">
+          🔧 Tester le mode édition
+        </button>
+        <div id="testLink" style="margin-top: 10px; font-size: 12px; display: none;">
+          <div>Lien de test :</div>
+          <input type="text" id="testLinkInput" readonly style="width: 100%; padding: 5px; margin-top: 5px; font-size: 12px;">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-content">
+      <div id="editBanner" class="edit-banner">
+        <strong>✏️ Mode édition:</strong> Vous modifiez une cover existante. Changez ce que vous voulez et régénérez!
+      </div>
+
+      <div id="alertBox" class="alert"></div>
+
+      <form id="coverForm">
+        <!-- Informations générales -->
+        <h2 style="color: #3D7A9C; margin-bottom: 20px; font-size: 20px;">📋 Informations du meetup</h2>
+
+        <div class="form-group">
+          <label>Chapitre <span class="required">*</span></label>
+          <select name="chapter" id="chapter" required>
+            <option value="">Sélectionnez un chapitre</option>
+            <option value="GrandSud">GrandSud</option>
+            <option value="Nantes-Bretagne">Nantes-Bretagne</option>
+            <option value="Nord">Nord</option>
+            <option value="Paris">Paris</option>
+            <option value="Rennes">Rennes</option>
+            <option value="Rhône-Alpes">Rhône-Alpes</option>
+            <option value="SudOuest">SudOuest</option>
+            <option value="SudOuest Toulouse">SudOuest Toulouse</option>
+            <option value="Tours">Tours</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Titre du meetup <span class="required">*</span></label>
+          <input type="text" name="title" id="title" required placeholder="Ex: Quel framework pour votre équipe?">
+          <div class="help-text">Maximum 60 caractères recommandé</div>
+        </div>
+
+        <div class="form-group">
+          <label>Sous-titre / Description</label>
+          <textarea name="subtitle" id="subtitle"
+            placeholder="Description courte de l'événement (optionnel)"></textarea>
+          <div class="help-text">Maximum 3 lignes</div>
+        </div>
+
+        <div class="form-group">
+          <label>Type d'événement <span class="required">*</span></label>
+          <select name="eventType" id="eventType" required>
+            <option value="Conférence">Conférence</option>
+            <option value="Table ronde">Table ronde</option>
+            <option value="Atelier">Atelier</option>
+            <option value="Networking">Networking</option>
+            <option value="Workshop">Workshop</option>
+            <option value="Autre">Autre</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="customEventTypeGroup" style="display: none;">
+          <label>Type personnalisé <span class="required">*</span></label>
+          <input type="text" name="customEventType" id="customEventType" maxlength="30" placeholder="Saisissez votre type d'événement">
+          <div class="help-text">Maximum 30 caractères</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+          <div class="form-group">
+            <label>Date <span class="required">*</span></label>
+            <input type="date" name="date" id="date" required>
+            <div class="help-text">Format: JJ/MM/AAAA</div>
+          </div>
+
+          <div class="form-group">
+            <label>Heure de début <span class="required">*</span></label>
+            <input type="time" name="time" id="time" required>
+            <div class="help-text">"à partir de" sera ajouté automatiquement</div>
+          </div>
+        </div>
+
+        <!-- Lieu -->
+        <h2 style="color: #3D7A9C; margin: 30px 0 20px; font-size: 20px;">📍 Lieu</h2>
+
+        <div class="form-group">
+          <label>Nom de l'entreprise hôte <span class="required">*</span></label>
+          <input type="text" name="hostName" id="hostName" required placeholder="Ex: Tha_entreprise">
+        </div>
+
+        <div class="form-group">
+          <label>Adresse <span class="required">*</span></label>
+          <input type="text" name="address" id="address" required placeholder="90 rue Saint-Martin, Paris">
+        </div>
+
+        <!-- Speakers -->
+        <h2 style="color: #3D7A9C; margin: 30px 0 20px; font-size: 20px;">🎤 Speakers</h2>
+
+        <div class="speakers-section">
+          <div id="speakersContainer">
+            <!-- Les speakers seront ajoutés ici dynamiquement -->
+          </div>
+
+          <button type="button" class="btn-add-speaker" id="addSpeakerBtn">
+            + Ajouter un speaker
+          </button>
+        </div>
+
+        <!-- Email -->
+        <h2 style="color: #3D7A9C; margin: 30px 0 20px; font-size: 20px;">📧 Envoi</h2>
+
+        <div class="form-group">
+          <label>Votre email <span class="required">*</span></label>
+          <input type="email" name="email" id="email" required placeholder="votre@email.com">
+          <div class="help-text">La cover sera envoyée à cette adresse</div>
+        </div>
+
+        <!-- Actions -->
+        <div style="margin-top: 30px;">
+          <button type="submit" class="btn-primary" style="width: 100%;" id="submitBtn">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="opacity: 0; transition: opacity 0.2s;"></span>
+            <span>Générer et envoyer</span>
+          </button>
+        </div>
+      </form>
+
+      <div class="loading-overlay" id="loading">
+        <div class="spinner"></div>
+        <p style="color: #333; font-size: 1.2em; margin-top: 15px;">Génération de votre cover en cours...<br>Cela peut prendre quelques secondes</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    console.log('📜 Script chargé!');
+    
+    // Données d'édition passées par le serveur
+    const SERVER_EDIT_DATA = <?!= typeof editData !== 'undefined' ? JSON.stringify(editData) : '{}' ?>;
+    const IS_EDIT_MODE = <?= typeof isEdit !== 'undefined' ? isEdit : false ?>;
+    console.log('📦 Données serveur:', SERVER_EDIT_DATA);
+    console.log('✏️ Mode édition serveur:', IS_EDIT_MODE);
+    
+    // ============================================
+    // CONFIGURATION
+    // ============================================
+
+    const MAX_SPEAKERS = 4;
+    let speakerCount = 0;
+
+    // ============================================
+    // OUTILS DE DÉVELOPPEMENT
+    // ============================================
+    function setupDevTools() {
+      // Outils de développement désactivés en production
+      const devTools = document.getElementById('devTools');
+      if (devTools) devTools.style.display = 'none';
+      
+      // Gestion du bouton de test
+      const testButton = document.getElementById('testEditMode');
+      if (testButton) {
+        testButton.addEventListener('click', function() {
+          // Données de test
+          const testData = {
+            chapter: 'Paris',
+            title: 'Mon Événement de Test',
+            subtitle: 'Un sous-titre intéressant',
+            eventType: 'meetup',
+            date: '15/11/25',
+            time: '18:30',
+            hostName: 'FrenchProduit',
+            address: '123 Rue de Test, Paris',
+            email: 'test@example.com',
+            speakers: [
+              {
+                name: 'John Doe',
+                title: 'Expert en Tests',
+                photo: 'https://via.placeholder.com/300?text=John+Doe'
+              },
+              {
+                name: 'Jane Smith',
+                title: 'Spécialiste QA',
+                photo: 'https://via.placeholder.com/300?text=Jane+Smith'
+              }
+            ]
+          };
+          
+          // Créer l'URL de test
+          const testLink = createTestEditLink(testData);
+          
+          // Afficher le lien
+          const testLinkDiv = document.getElementById('testLink');
+          const testLinkInput = document.getElementById('testLinkInput');
+          testLinkInput.value = testLink;
+          testLinkDiv.style.display = 'block';
+          
+          // Sélectionner le texte pour faciliter le copier-coller
+          testLinkInput.select();
+        });
+      }
+    }
+    
+    function createTestEditLink(data) {
+      const params = new URLSearchParams();
+      
+      // Ajouter les champs simples
+      const simpleFields = ['chapter', 'title', 'subtitle', 'eventType', 'hostName', 'address', 'email', 'date', 'time'];
+      simpleFields.forEach(function(field) {
+        if (data[field]) {
+          params.append(field, data[field]);
+        }
+      });
+      
+      // Ajouter les speakers
+      if (data.speakers && data.speakers.length > 0) {
+        params.append('speakers', JSON.stringify(data.speakers));
+      }
+      
+      // Créer l'URL complète
+      return window.location.origin + window.location.pathname + '?' + params.toString();
+    }
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🚀 DOMContentLoaded - Initialisation...');
+      
+      // Initialiser les outils de développement
+      setupDevTools();
+      
+      // Utiliser les données passées par le serveur
+      // Vérifier si on a vraiment des données (pas juste un objet vide)
+      const hasEditData = IS_EDIT_MODE && SERVER_EDIT_DATA && Object.keys(SERVER_EDIT_DATA).length > 0;
+      console.log('📝 Mode édition:', hasEditData);
+      
+      // Afficher la bannière d'édition si nécessaire
+      const editBanner = document.getElementById('editBanner');
+      if (editBanner) {
+        editBanner.style.display = hasEditData ? 'block' : 'none';
+      }
+      
+      // Charger les données d'édition si nécessaire
+      if (hasEditData) {
+        console.log('✏️ Mode édition détecté, chargement des données...');
+        loadEditData();
+      } else {
+        // En mode création, ajouter UN SEUL speaker par défaut
+        console.log('🆕 Mode création, ajout d\'un speaker par défaut');
+        addSpeaker();
+      }
+      
+      // Ajouter les écouteurs d'événements
+      console.log('🎯 Ajout des écouteurs d\'événements...');
+      
+      const addSpeakerBtn = document.getElementById('addSpeakerBtn');
+      if (addSpeakerBtn) {
+        addSpeakerBtn.addEventListener('click', addSpeaker);
+      }
+      
+      const coverForm = document.getElementById('coverForm');
+      if (coverForm) {
+        coverForm.addEventListener('submit', handleSubmit);
+      }
+      
+      const previewBtn = document.getElementById('previewBtn');
+      if (previewBtn) {
+        previewBtn.addEventListener('click', showPreview);
+      }
+      
+      // Gérer l'affichage du champ personnalisé pour le type d'événement
+      const eventTypeSelect = document.getElementById('eventType');
+      const customEventTypeGroup = document.getElementById('customEventTypeGroup');
+      const customEventTypeInput = document.getElementById('customEventType');
+      
+      if (eventTypeSelect && customEventTypeGroup && customEventTypeInput) {
+        eventTypeSelect.addEventListener('change', function() {
+          if (this.value === 'Autre') {
+            customEventTypeGroup.style.display = 'block';
+            customEventTypeInput.required = true;
+          } else {
+            customEventTypeGroup.style.display = 'none';
+            customEventTypeInput.required = false;
+            customEventTypeInput.value = '';
+          }
+        });
+      }
+      
+      console.log('✅ Initialisation terminée');
+    });
+
+    // ============================================
+    // SPEAKER MANAGEMENT
+    // ============================================
+
+    function addSpeaker() {
+      console.log('🎤 addSpeaker() appelée, speakerCount actuel:', speakerCount);
+      
+      if (speakerCount >= MAX_SPEAKERS) {
+        console.warn('⚠️ Maximum de speakers atteint:', MAX_SPEAKERS);
+        alert('Maximum 4 speakers autorisés');
+        return;
+      }
+
+      speakerCount++;
+      console.log('📊 Nouveau speakerCount:', speakerCount);
+
+      const container = document.getElementById('speakersContainer');
+      console.log('📦 Container trouvé:', container);
+      
+      if (!container) {
+        console.error('❌ Container speakersContainer introuvable!');
+        return;
+      }
+
+      const speakerDiv = document.createElement('div');
+      speakerDiv.className = 'speaker-item';
+      speakerDiv.dataset.speakerId = speakerCount;
+
+      speakerDiv.innerHTML = 
+        '<div class="speaker-header">' +
+          '<span class="speaker-number">Speaker ' + speakerCount + '</span>' +
+          (speakerCount > 1 ? '<button type="button" class="btn-remove-speaker" onclick="removeSpeaker(' + speakerCount + ')">✕ Supprimer</button>' : '') +
+        '</div>' +
+        '<div class="form-group">' +
+          '<label>Nom complet <span class="required">*</span></label>' +
+          '<input type="text" name="speaker_' + speakerCount + '_name" required placeholder="Jean Lunette">' +
+        '</div>' +
+        '<div class="form-group">' +
+          '<label>Titre / Entreprise</label>' +
+          '<input type="text" name="speaker_' + speakerCount + '_title" placeholder="Coach Product @Bliblicar">' +
+        '</div>' +
+        '<div class="form-group">' +
+          '<label>Photo <span class="required">*</span></label>' +
+          '<input type="file" name="speaker_' + speakerCount + '_photo" accept="image/*" required onchange="handlePhotoUpload(this, ' + speakerCount + ')">' +
+          '<div class="help-text">Format carré recommandé (JPG, PNG). Max 2MB</div>' +
+          '<input type="hidden" name="speaker_' + speakerCount + '_photo_data" id="speaker_' + speakerCount + '_photo_data">' +
+          '<div id="speaker_' + speakerCount + '_preview" style="margin-top: 10px;"></div>' +
+        '</div>';
+
+      console.log('✅ HTML du speaker créé, ajout au container...');
+      container.appendChild(speakerDiv);
+      console.log('✅ Speaker ajouté! Total speakers:', document.querySelectorAll('.speaker-item').length);
+
+      updateAddButton();
+    }
+
+    function handlePhotoUpload(input, speakerId) {
+      const file = input.files[0];
+      if (!file) return;
+
+      // Vérifier la taille (max 5MB avant compression)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('La photo est trop grande. Maximum 5MB.');
+        input.value = '';
+        return;
+      }
+
+      // Redimensionner et compresser l'image
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+          // Redimensionner à 300x300 max
+          const canvas = document.createElement('canvas');
+          const maxSize = 300;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxSize) {
+              height *= maxSize / width;
+              width = maxSize;
+            }
+          } else {
+            if (height > maxSize) {
+              width *= maxSize / height;
+              height = maxSize;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          
+          // Ajouter un fond blanc pour les images transparentes (GIF, PNG)
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, width, height);
+          
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Convertir en base64 avec compression JPEG
+          const base64 = canvas.toDataURL('image/jpeg', 0.8);
+          document.getElementById('speaker_' + speakerId + '_photo_data').value = base64;
+
+          // Afficher aperçu
+          const preview = document.getElementById('speaker_' + speakerId + '_preview');
+          preview.innerHTML = '<img src="' + base64 + '" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 2px solid #3D7A9C;">';
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeSpeaker(id) {
+      const speakerDiv = document.querySelector('[data-speaker-id="' + id + '"]');
+      if (speakerDiv) {
+        speakerDiv.remove();
+        speakerCount--;
+        renumberSpeakers();
+        updateAddButton();
+      }
+    }
+
+    function renumberSpeakers() {
+      const speakers = document.querySelectorAll('.speaker-item');
+      speakers.forEach(function(speaker, index) {
+        const num = index + 1;
+        speaker.dataset.speakerId = num;
+        speaker.querySelector('.speaker-number').textContent = 'Speaker ' + num;
+
+        // Renommer les inputs
+        const inputs = speaker.querySelectorAll('input');
+        inputs.forEach(function(input) {
+          const nameParts = input.name.split('_');
+          input.name = 'speaker_' + num + '_' + nameParts[2];
+        });
+      });
+      speakerCount = speakers.length;
+    }
+
+    function updateAddButton() {
+      const btn = document.getElementById('addSpeakerBtn');
+      btn.disabled = speakerCount >= MAX_SPEAKERS;
+      btn.textContent = speakerCount >= MAX_SPEAKERS
+        ? '✓ Maximum atteint (4 speakers)'
+        : '+ Ajouter un speaker';
+    }
+
+    // ============================================
+    // FORM HANDLING
+    // ============================================
+
+    function onSuccess(result) {
+      console.log('Succès:', result);
+      
+      // Cacher le spinner
+      document.getElementById('loading').classList.remove('active');
+      
+      // Réactiver le bouton
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = false;
+      
+      // Remonter en haut de la page
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      // Afficher un message de succès
+      showAlert('✅ Votre cover a été générée et envoyée avec succès à votre adresse email !', 'success');
+    }
+    
+    function onError(error) {
+      console.error('Erreur:', error);
+      
+      // Cacher le spinner
+      document.getElementById('loading').classList.remove('active');
+      
+      // Réactiver le bouton
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = false;
+      
+      // Afficher un message d'erreur détaillé
+      let errorMessage = 'Une erreur est survenue lors de la génération de votre cover.';
+      
+      if (error && error.message) {
+        errorMessage += `<br><small>Détail technique : ${error.message}</small>`;
+      }
+      
+      showAlert(`❌ ${errorMessage}`, 'error');
+    }
+    
+    function handleSubmit(e) {
+      e.preventDefault();
+      
+      try {
+        // Désactiver le bouton
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        
+        // Afficher l'overlay de chargement
+        document.getElementById('loading').classList.add('active');
+        
+        // Collecter les données du formulaire
+        const formData = collectFormData();
+        console.log('Données du formulaire:', formData);
+
+        // Validation
+        if (!validateFormData(formData)) {
+          submitBtn.disabled = false;
+          document.getElementById('loading').classList.remove('active');
+          return false;
+        }
+        
+        console.log('Appel de generateAndEmailCover avec les données:', formData);
+
+        // Appeler le backend
+        google.script.run
+          .withSuccessHandler(onSuccess)
+          .withFailureHandler(onError)
+          .generateAndEmailCover(formData);
+          
+        return false; // Empêcher la soumission du formulaire
+      } catch (error) {
+        console.error('Erreur dans handleSubmit:', error);
+        onError(error);
+        return false;
+      }
+    }
+
+    function collectFormData() {
+      const form = document.getElementById('coverForm');
+      const formData = new FormData(form);
+
+      // Formater la date (YYYY-MM-DD → DD/MM/YYYY)
+      const dateInput = formData.get('date');
+      const dateParts = dateInput.split('-');
+      const formattedDate = dateParts[2] + '/' + dateParts[1] + '/' + dateParts[0].substring(2);
+
+      // Formater l'heure (HH:MM → "à partir de HHhMM")
+      const timeInput = formData.get('time');
+      const formattedTime = 'à partir de ' + timeInput.replace(':', 'h');
+
+      // Utiliser le type personnalisé si "Autre" est sélectionné
+      const eventType = formData.get('eventType');
+      const customEventType = formData.get('customEventType');
+      const finalEventType = (eventType === 'Autre' && customEventType) ? customEventType : eventType;
+
+      const data = {
+        chapter: formData.get('chapter'),
+        title: formData.get('title'),
+        subtitle: formData.get('subtitle'),
+        eventType: finalEventType,
+        date: formattedDate,
+        time: formattedTime,
+        hostName: formData.get('hostName'),
+        address: formData.get('address'),
+        email: formData.get('email'),
+        speakers: []
+      };
+
+      // Collecter speakers avec photos en base64
+      for (let i = 1; i <= speakerCount; i++) {
+        const name = formData.get('speaker_' + i + '_name');
+        const title = formData.get('speaker_' + i + '_title');
+        const photoData = document.getElementById('speaker_' + i + '_photo_data').value;
+
+        if (name && photoData) {
+          data.speakers.push({
+            name: name,
+            title: title || '',
+            photo: photoData
+          });
+        }
+      }
+
+      return data;
+    }
+
+    function validateFormData(data) {
+      if (data.speakers.length === 0) {
+        showAlert('Au moins un speaker est requis', 'error');
+        return false;
+      }
+
+      if (data.title.length > 80) {
+        showAlert('Le titre est trop long (max 80 caractères)', 'error');
+        return false;
+      }
+
+      return true;
+    }
+
+
+    function onError(error) {
+      const loadingEl = document.getElementById('loading');
+      const formEl = document.getElementById('coverForm');
+      
+      if (loadingEl) loadingEl.classList.remove('active');
+      if (formEl) formEl.style.display = 'block';
+      
+      const errorMessage = error && error.message 
+        ? 'Erreur: ' + error.message 
+        : 'Une erreur inattendue est survenue';
+        
+      showAlert('❌ ' + errorMessage, 'error');
+    }
+
+    function showAlert(message, type) {
+      const alertBox = document.getElementById('alertBox');
+      alertBox.textContent = message;
+      alertBox.className = 'alert alert-' + type + ' active';
+
+      // Scroll vers le haut
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Auto-hide après 10 secondes
+      setTimeout(function() {
+        alertBox.classList.remove('active');
+      }, 10000);
+    }
+
+    // ============================================
+    // PREVIEW
+    // ============================================
+
+    function showPreview() {
+      alert('Fonctionnalité de prévisualisation à venir!\n\nPour le moment, générez la cover pour voir le résultat.');
+    }
+
+    // ============================================
+    // EDIT MODE
+    // ============================================
+    function parseUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      const data = {};
+      
+      params.forEach(function(value, key) {
+        if (key === 'speakers') {
+          try {
+            data.speakers = JSON.parse(decodeURIComponent(value));
+          } catch (e) {
+            console.error('Erreur parsing speakers:', e);
+            data.speakers = [];
+          }
+        } else {
+          data[key] = decodeURIComponent(value);
+        }
+      });
+      
+      return data;
+    }
+
+    function createEditLink(formData) {
+      var webAppUrl = ScriptApp.getService().getUrl();
+      
+      // Créer une copie des données pour éviter de modifier l'original
+      const dataToEncode = Object.assign({}, formData);
+      
+      // Si c'est déjà un string JSON, ne pas le re-sérialiser
+      if (typeof dataToEncode.speakers === 'string') {
+        dataToEncode.speakers = JSON.parse(dataToEncode.speakers);
+      }
+      
+      // Convertir les données en paramètres d'URL
+      const params = new URLSearchParams();
+      
+      Object.keys(dataToEncode).forEach(function(key) {
+        const value = dataToEncode[key];
+        if (value !== null && value !== undefined) {
+          const paramValue = key === 'speakers' 
+            ? JSON.stringify(value) 
+            : String(value);
+          params.append(key, paramValue);
+        }
+      });
+      
+      return webAppUrl + '?' + params.toString();
+    }
+
+    function loadEditData() {
+      try {
+        // Utiliser les données passées par le serveur
+        const editData = SERVER_EDIT_DATA;
+        
+        console.log('=== MODE ÉDITION ===');
+        console.log('Données d\'édition:', editData);
+
+        if (!editData || Object.keys(editData).length === 0) {
+          console.log('❌ Aucune donnée d\'édition trouvée');
+          showAlert('❌ Aucune donnée de modification trouvée.', 'error');
+          return false;
+        }
+        
+        // Si on a des données de speaker, on supprime le speaker par défaut
+        if (editData.speakers && editData.speakers.length > 0) {
+          const speakersContainer = document.getElementById('speakersContainer');
+          speakersContainer.innerHTML = '';
+          speakerCount = 0;
+        }
+
+      console.log('✅ Chargement des données d\'édition...');
+
+      // Charger champs simples (sauf eventType qui nécessite traitement spécial)
+      const simpleFields = ['chapter', 'title', 'subtitle', 'hostName', 'address', 'email'];
+      simpleFields.forEach(function(field) {
+        const input = document.getElementById(field);
+        if (input && editData[field]) {
+          input.value = editData[field];
+          console.log('✅ ' + field + ': ' + editData[field]);
+        } else {
+          console.log('⚠️ ' + field + ': non trouvé ou vide');
+        }
+      });
+
+      // Gérer le type d'événement (peut être prédéfini ou personnalisé)
+      if (editData.eventType) {
+        const eventTypeSelect = document.getElementById('eventType');
+        const predefinedTypes = ['Conférence', 'Table ronde', 'Atelier', 'Networking', 'Workshop'];
+        
+        if (predefinedTypes.includes(editData.eventType)) {
+          // Type prédéfini
+          eventTypeSelect.value = editData.eventType;
+          console.log('✅ eventType (prédéfini): ' + editData.eventType);
+        } else {
+          // Type personnalisé
+          eventTypeSelect.value = 'Autre';
+          document.getElementById('customEventTypeGroup').style.display = 'block';
+          document.getElementById('customEventType').value = editData.eventType;
+          document.getElementById('customEventType').required = true;
+          console.log('✅ eventType (personnalisé): ' + editData.eventType);
+        }
+      }
+
+      // Convertir et charger la date (DD/MM/YY → YYYY-MM-DD)
+      if (editData.date) {
+        try {
+          const dateParts = editData.date.split('/'); // ["15", "11", "25"]
+          if (dateParts.length === 3) {
+            const year = '20' + dateParts[2]; // "2025"
+            const month = dateParts[1].padStart(2, '0'); // "11"
+            const day = dateParts[0].padStart(2, '0'); // "15"
+            const isoDate = year + '-' + month + '-' + day; // "2025-11-15"
+            document.getElementById('date').value = isoDate;
+            console.log('✅ date: ' + editData.date + ' → ' + isoDate);
+          }
+        } catch (e) {
+          console.log('❌ Erreur conversion date:', e);
+        }
+      }
+
+      // Convertir et charger l'heure ("à partir de 18h30" → "18:30")
+      if (editData.time) {
+        try {
+          // Extraire l'heure du format "à partir de 18h30"
+          const timeMatch = editData.time.match(/(\d+)h(\d+)/);
+          if (timeMatch) {
+            const hours = timeMatch[1].padStart(2, '0');
+            const minutes = timeMatch[2].padStart(2, '0');
+            const isoTime = hours + ':' + minutes;
+            document.getElementById('time').value = isoTime;
+            console.log('✅ time: ' + editData.time + ' → ' + isoTime);
+          }
+        } catch (e) {
+          console.log('❌ Erreur conversion time:', e);
+        }
+      }
+
+      // Charger speakers
+      if (editData.speakers && Array.isArray(editData.speakers)) {
+        const speakers = editData.speakers;
+        console.log('Speakers data:', speakers);
+
+        // Ajouter tous les speakers
+        for (var i = 0; i < speakers.length; i++) {
+          addSpeaker();
+        }
+
+        // Puis remplir les champs (avec un petit délai pour que le DOM soit prêt)
+        setTimeout(function() {
+          speakers.forEach(function(speaker, index) {
+
+            const num = index + 1;
+            console.log('Speaker ' + num + ':', speaker);
+            
+            const nameInput = document.querySelector('[name="speaker_' + num + '_name"]');
+            const titleInput = document.querySelector('[name="speaker_' + num + '_title"]');
+            
+            if (nameInput) nameInput.value = speaker.name || '';
+            if (titleInput) titleInput.value = speaker.title || '';
+
+            // Afficher la photo existante et sauvegarder l'URL
+            if (speaker.photo) {
+              const photoDataInput = document.getElementById('speaker_' + num + '_photo_data');
+              const preview = document.getElementById('speaker_' + num + '_preview');
+              const photoInput = document.querySelector('[name="speaker_' + num + '_photo"]');
+
+              if (photoDataInput && preview) {
+                // Sauvegarder l'URL existante
+                photoDataInput.value = speaker.photo;
+
+                // Rendre le champ file optionnel (photo déjà existante)
+                if (photoInput) {
+                  photoInput.removeAttribute('required');
+                }
+
+                // Afficher l'aperçu avec message explicatif
+                preview.innerHTML = 
+                  '<div style="background: #e8f5e9; border: 2px solid #4caf50; border-radius: 8px; padding: 15px; margin-top: 10px;">' +
+                    '<div style="display: flex; align-items: center; gap: 10px;">' +
+                      '<svg width="24" height="24" fill="#4caf50" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' +
+                      '<div>' +
+                        '<div style="font-weight: 600; color: #2e7d32; margin-bottom: 5px;">✅ Photo déjà chargée</div>' +
+                        '<div style="font-size: 13px; color: #555;">Votre photo actuelle sera utilisée. Vous pouvez la remplacer en sélectionnant un nouveau fichier ci-dessus.</div>' +
+                      '</div>' +
+                    '</div>' +
+                  '</div>';
+
+                console.log('✅ Photo existante chargée pour speaker ' + num);
+              } else {
+                console.log('⚠️ Éléments preview non trouvés pour speaker ' + num);
+              }
+            }
+
+            console.log('✅ Speaker ' + num + ' chargé: ' + speaker.name);
+          });
+        }, 300);
+      } else {
+        console.log('⚠️ Pas de speakers, ajout d\'un speaker par défaut');
+        // Ajouter un speaker par défaut si aucun
+        addSpeaker();
+      }
+
+      console.log('=== FIN EDIT MODE ===');
+      } catch (error) {
+        console.error('❌ Erreur lors du chargement des données d\'édition:', error);
+        showAlert('❌ Erreur lors du chargement des données. Veuillez réessayer.', 'error');
+      }
+    }
+  </script>
+</body>
+
+</html>
