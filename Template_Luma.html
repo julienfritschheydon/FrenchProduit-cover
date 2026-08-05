@@ -179,9 +179,13 @@
 
     .speaker-tags {
       position: absolute;
-      bottom: -26px;
-      left: 12px;
-      max-width: 90%;
+      bottom: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      transform: rotate(5deg);
+      transform-origin: bottom left;
     }
 
     .speaker-tags .tag-name {
@@ -190,14 +194,8 @@
       font-weight: 700;
       font-size: 22px;
       padding: 10px 17px;
-      border-radius: 5px;
-      transform: rotate(-4deg);
-      box-shadow: -4px 4px 0px 0px rgba(255, 255, 255, 0.3);
       white-space: nowrap;
-      display: inline-block;
       text-transform: uppercase;
-      position: relative;
-      z-index: 2;
     }
 
     .speaker-tags .tag-title {
@@ -206,78 +204,23 @@
       font-weight: 700;
       font-size: 17px;
       padding: 7px 14px;
-      border-radius: 5px;
-      transform: rotate(-3deg);
-      margin-top: -8px;
-      margin-left: -10px;
       white-space: nowrap;
-      display: inline-block;
       text-transform: uppercase;
-      position: relative;
-      z-index: 1;
     }
 
-    /* Ajustement de la taille des cartes selon le nombre de speakers, pour éviter tout chevauchement */
+    /* Photos gardent leur taille pleine (313x418) quel que soit le nombre de speakers,
+       confirmé par l'export Figma à 3 personnes (gap=105px, positions symétriques).
+       Seul le gap se resserre pour que 4 speakers tiennent dans les 1320px disponibles. */
     .speakers-row.count-2 {
-      gap: 54px;
-      margin-top: 60px;
-    }
-
-    .speakers-row.count-2 .speaker-card {
-      width: 252px;
-    }
-
-    .speakers-row.count-2 .speaker-photo {
-      width: 252px;
-      height: 288px;
+      gap: 105px;
     }
 
     .speakers-row.count-3 {
-      gap: 43px;
-      margin-top: 66px;
-    }
-
-    .speakers-row.count-3 .speaker-card {
-      width: 216px;
-    }
-
-    .speakers-row.count-3 .speaker-photo {
-      width: 216px;
-      height: 252px;
-    }
-
-    .speakers-row.count-3 .speaker-tags .tag-name {
-      font-size: 18px;
-      padding: 7px 12px;
-    }
-
-    .speakers-row.count-3 .speaker-tags .tag-title {
-      font-size: 14px;
-      padding: 6px 11px;
+      gap: 105px;
     }
 
     .speakers-row.count-4 {
-      gap: 31px;
-      margin-top: 72px;
-    }
-
-    .speakers-row.count-4 .speaker-card {
-      width: 192px;
-    }
-
-    .speakers-row.count-4 .speaker-photo {
-      width: 192px;
-      height: 234px;
-    }
-
-    .speakers-row.count-4 .speaker-tags .tag-name {
-      font-size: 16px;
-      padding: 6px 11px;
-    }
-
-    .speakers-row.count-4 .speaker-tags .tag-title {
-      font-size: 13px;
-      padding: 5px 10px;
+      gap: 22px;
     }
 
     .footer-row {
