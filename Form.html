@@ -518,6 +518,10 @@
             style="width: 100%; padding: 5px; margin-top: 5px; font-size: 12px;">
         </div>
       </div>
+
+      <button type="button" id="fillTestDataBtn" class="btn-secondary" style="font-size: 12px; padding: 5px 10px; margin-top: 10px;">
+        🧪 Remplir avec des données de test (photo/logo à uploader à la main)
+      </button>
     </div>
 
     <div class="form-content">
@@ -792,6 +796,47 @@
 
           // Sélectionner le texte pour faciliter le copier-coller
           testLinkInput.select();
+        });
+      }
+
+      // Bouton "Remplir avec des données de test" - remplit tous les champs texte
+      // du formulaire réel (pas juste un lien) ; photo + logo restent à uploader à la main
+      const fillTestDataBtn = document.getElementById('fillTestDataBtn');
+      if (fillTestDataBtn) {
+        fillTestDataBtn.addEventListener('click', function () {
+          document.getElementById('template_luma').checked = true;
+
+          const values = {
+            chapter: 'Lyon',
+            title: 'Simplifier sans trahir - designer la clarté dans un domaine complexe',
+            subtitle: 'Un talk sur le design produit dans un domaine complexe',
+            eventType: 'Conférence',
+            date: '2026-04-28',
+            time: '18:45',
+            hostName: 'indy',
+            street: '94 Rue Robert',
+            postalCode: '69006',
+            city: 'Lyon',
+            sponsorName: 'FrenchProduit',
+            email: 'julien.fritsch@gmail.com'
+          };
+          Object.keys(values).forEach(function (id) {
+            const input = document.getElementById(id);
+            if (input) {
+              input.value = values[id];
+              input.dispatchEvent(new Event('input'));
+              input.dispatchEvent(new Event('change'));
+            }
+          });
+
+          // Au moins un speaker : remplit le premier (créé par défaut au chargement)
+          if (speakerCount < 1) addSpeaker();
+          const speakerName = document.querySelector('[name="speaker_1_name"]');
+          const speakerTitle = document.querySelector('[name="speaker_1_title"]');
+          if (speakerName) { speakerName.value = 'Julien Fritsch'; speakerName.dispatchEvent(new Event('input')); }
+          if (speakerTitle) { speakerTitle.value = 'Product Manager @MariaDB'; speakerTitle.dispatchEvent(new Event('input')); }
+
+          showAlert('✅ Données de test remplies. Ajoute la photo du speaker et le logo sponsor à la main.', 'success');
         });
       }
     }
