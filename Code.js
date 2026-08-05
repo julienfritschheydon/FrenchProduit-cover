@@ -157,6 +157,11 @@ function getTemplateFileName(data) {
   return (data && data.template === 'luma') ? 'Template_Luma' : 'Template_Universal';
 }
 
+// Dimensions du canvas rendu (doivent matcher .main-container dans le fichier template)
+function getTemplateDimensions(data) {
+  return (data && data.template === 'luma') ? { width: 1200, height: 1200 } : { width: 1200, height: 675 };
+}
+
 // WEB APP ENTRY POINT
 // ============================================
 
@@ -219,7 +224,7 @@ function generateAndEmailCover(formData) {
     var htmlContent = generateCoverHTML(formData);
 
     // 5. Convertir en image
-    var imageBlob = convertHTMLToImage(htmlContent);
+    var imageBlob = convertHTMLToImage(htmlContent, getTemplateDimensions(formData));
 
     // 6. Créer lien d'édition court
     var editLink = createEditLinkFromFileId(dataFileId);
@@ -561,9 +566,10 @@ function generateCoverHTML(data) {
 // IMAGE CONVERSION
 // ============================================
 
-function convertHTMLToImage(htmlContent) {
+function convertHTMLToImage(htmlContent, dimensions) {
   var maxRetries = 2;
   var lastError;
+  dimensions = dimensions || { width: 1200, height: 675 };
 
   for (var attempt = 1; attempt <= maxRetries; attempt++) {
     try {
@@ -572,7 +578,7 @@ function convertHTMLToImage(htmlContent) {
       if (CONFIG.IMAGE_SERVICE === 'HCTI') {
         return convertWithHCTI(htmlContent);
       } else if (CONFIG.IMAGE_SERVICE === 'CLOUDFUNCTION') {
-        return convertWithCloudFunction(htmlContent);
+        return convertWithCloudFunction(htmlContent, dimensions);
       } else {
         throw new Error('Service de conversion non configuré');
       }
@@ -636,13 +642,16 @@ function convertWithHCTI(htmlContent) {
 }
 
 // Option 2: Cloud Function avec Puppeteer
-function convertWithCloudFunction(htmlContent) {
+function convertWithCloudFunction(htmlContent, dimensions) {
   if (!CONFIG.CLOUD_FUNCTION_URL) {
     throw new Error('Cloud Function URL non configurée');
   }
 
+  dimensions = dimensions || { width: 1200, height: 675 };
+
   Logger.log('📡 Appel Cloud Function: ' + CONFIG.CLOUD_FUNCTION_URL);
   Logger.log('📏 Taille HTML: ' + (htmlContent.length / 1024).toFixed(2) + ' KB');
+  Logger.log('📐 Dimensions: ' + dimensions.width + 'x' + dimensions.height);
 
   var startTime = new Date().getTime();
 
@@ -651,8 +660,8 @@ function convertWithCloudFunction(htmlContent) {
     contentType: 'application/json',
     payload: JSON.stringify({
       html: htmlContent,
-      width: 1200,
-      height: 675
+      width: dimensions.width,
+      height: dimensions.height
     }),
     muteHttpExceptions: true
   });
