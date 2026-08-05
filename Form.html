@@ -1449,6 +1449,8 @@
       const dateInput = formData.get('date');
       const dateParts = dateInput.split('-');
       const formattedDate = dateParts[2] + '/' + dateParts[1] + '/' + dateParts[0].substring(2);
+      // Format ISO brut conservé pour les templates qui veulent une date en toutes lettres (ex: Luma)
+      const dateISO = dateInput;
 
       // Formater l'heure (HH:MM → "à partir de HHhMM")
       const timeInput = formData.get('time');
@@ -1466,6 +1468,7 @@
         subtitle: formData.get('subtitle'),
         eventType: finalEventType,
         date: formattedDate,
+        dateISO: dateISO,
         time: formattedTime,
         hostName: formData.get('hostName'),
         address: formData.get('address'),

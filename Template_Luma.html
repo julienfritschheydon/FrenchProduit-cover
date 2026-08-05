@@ -179,8 +179,8 @@
 
     .speaker-tags {
       position: absolute;
-      bottom: 0;
-      left: 0;
+      bottom: 6px;
+      left: 6px;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -192,20 +192,23 @@
       background: #EA4335;
       color: #ffffff;
       font-weight: 700;
-      font-size: 22px;
-      padding: 10px 17px;
+      font-size: 18px;
+      padding: 8px 14px;
       white-space: nowrap;
       text-transform: uppercase;
+      box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.35);
     }
 
     .speaker-tags .tag-title {
-      background: #f3b8ab;
+      background: #f3d9d4;
       color: #0F3D7E;
       font-weight: 700;
-      font-size: 17px;
-      padding: 7px 14px;
+      font-size: 14px;
+      padding: 6px 12px;
       white-space: nowrap;
       text-transform: uppercase;
+      margin-top: -2px;
+      box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.35);
     }
 
     /* Photos gardent leur taille pleine (313x418) quel que soit le nombre de speakers,
@@ -238,6 +241,8 @@
       display: flex;
       flex-direction: column;
       gap: 24px;
+      text-align: right;
+      align-items: flex-end;
     }
 
     .footer-line {
@@ -254,8 +259,8 @@
     }
 
     .footer-col.location {
-      text-align: right;
-      align-items: flex-end;
+      text-align: left;
+      align-items: flex-start;
     }
 
     .footer-line.host-name {
@@ -355,6 +360,25 @@
     </div>
 
     <?
+      // "à partir de 18h45" -> préfixe blanc + valeur de l'heure en rouge
+      var timeValueMatch = String(data.time).match(/(\d{1,2}h\d{2})\s*$/);
+      var timeValue = timeValueMatch ? timeValueMatch[1] : data.time;
+      var timePrefix = timeValueMatch ? data.time.substring(0, data.time.length - timeValue.length) : '';
+    ?>
+    <?
+      // Date en toutes lettres (jour de la semaine + numéro + mois + année) à partir du ISO yyyy-mm-dd
+      var displayDate = data.date;
+      if (data.dateISO) {
+        var joursFR = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+        var moisFR = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+        var isoParts = data.dateISO.split('-');
+        var dObj = new Date(Number(isoParts[0]), Number(isoParts[1]) - 1, Number(isoParts[2]));
+        if (!isNaN(dObj.getTime())) {
+          displayDate = joursFR[dObj.getDay()] + ' ' + dObj.getDate() + ' ' + moisFR[dObj.getMonth()] + ' ' + dObj.getFullYear();
+        }
+      }
+    ?>
+    <?
       var titleLength = data.title.length;
       var titleClass = '';
       if (titleLength > 70) {
@@ -411,7 +435,7 @@
               fill="white" />
           </svg>
           <span>
-            <?= data.date ?>
+            <?= displayDate ?>
           </span>
         </div>
         <div class="footer-line">
@@ -423,9 +447,7 @@
               d="M7.86852 2.82243L7.53908 4.46963C8.84484 3.69481 10.3694 3.24995 11.9979 3.24995C13.6263 3.24995 15.1509 3.69482 16.4566 4.46964L16.1272 2.82243C15.9439 1.9061 15.8523 1.44794 15.6131 1.10522C15.4021 0.803011 15.1117 0.564968 14.774 0.417374C14.3911 0.250001 13.9238 0.250001 12.9893 0.250001L11.0064 0.250001C10.0719 0.25 9.60467 0.25 9.22169 0.417373C8.88397 0.564967 8.59361 0.80301 8.38265 1.10522C8.14342 1.44793 8.05179 1.9061 7.86852 2.82243ZM7.86852 21.1776L7.53906 19.5303C8.84482 20.3051 10.3694 20.75 11.9979 20.75C13.6263 20.75 15.1509 20.3051 16.4567 19.5303L16.1272 21.1776C15.9439 22.0939 15.8523 22.5521 15.6131 22.8948C15.4021 23.197 15.1117 23.435 14.774 23.5826C14.3911 23.75 13.9238 23.75 12.9894 23.75L12.9894 23.75L12.9894 23.75L12.9893 23.75L11.0064 23.75C10.0719 23.75 9.60466 23.75 9.22169 23.5826C8.88397 23.435 8.59361 23.197 8.38265 22.8948C8.14342 22.5521 8.05179 22.0939 7.86852 21.1776ZM12.7478 9C12.7478 8.58579 12.412 8.25 11.9978 8.25C11.5836 8.25 11.2478 8.58579 11.2478 9L11.2478 12C11.2478 12.2361 11.3589 12.4584 11.5478 12.6L13.5478 14.1C13.8792 14.3485 14.3493 14.2814 14.5978 13.95C14.8463 13.6186 14.7792 13.1485 14.4478 12.9L12.7478 11.625L12.7478 9Z"
               fill="white" />
           </svg>
-          <span class="accent">
-            <?= data.time ?>
-          </span>
+          <span><?= timePrefix ?><span class="accent"><?= timeValue ?></span></span>
         </div>
       </div>
       <div class="footer-divider"></div>
