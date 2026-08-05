@@ -461,8 +461,13 @@
           </svg>
           <?= data.hostName ?>
         </div>
-        <div class="footer-line address">
-          <?= data.address ?>
+        <div class="footer-line address" style="flex-direction: column; align-items: flex-start; gap: 0;">
+          <? if (data.street) { ?>
+          <span><?= data.street ?></span>
+          <span><?= data.postalCode ?> <?= data.city ?></span>
+          <? } else { ?>
+          <span><?= data.address ?></span>
+          <? } ?>
         </div>
       </div>
     </div>

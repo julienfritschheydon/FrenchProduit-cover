@@ -626,8 +626,20 @@
         </div>
 
         <div class="form-group">
-          <label>Adresse <span class="required">*</span></label>
-          <input type="text" name="address" id="address" required placeholder="90 rue Saint-Martin, Paris">
+          <label>Rue <span class="required">*</span></label>
+          <input type="text" name="street" id="street" required placeholder="90 rue Saint-Martin">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 15px;">
+          <div class="form-group">
+            <label>Code postal <span class="required">*</span></label>
+            <input type="text" name="postalCode" id="postalCode" required placeholder="75010" maxlength="10">
+          </div>
+
+          <div class="form-group">
+            <label>Ville <span class="required">*</span></label>
+            <input type="text" name="city" id="city" required placeholder="Paris">
+          </div>
         </div>
 
         <!-- Sponsor (optionnel, template Luma 2026 uniquement) -->
@@ -1471,7 +1483,10 @@
         dateISO: dateISO,
         time: formattedTime,
         hostName: formData.get('hostName'),
-        address: formData.get('address'),
+        street: formData.get('street'),
+        postalCode: formData.get('postalCode'),
+        city: formData.get('city'),
+        address: formData.get('street') + ', ' + formData.get('postalCode') + ' ' + formData.get('city'),
         email: formData.get('email'),
         sponsorName: formData.get('sponsorName') || '',
         sponsorLogo: document.getElementById('sponsorLogo_data').value || '',
@@ -1652,7 +1667,7 @@
         }
 
         // Charger champs simples (sauf eventType qui nécessite traitement spécial)
-        const simpleFields = ['chapter', 'title', 'subtitle', 'hostName', 'address', 'email', 'sponsorName'];
+        const simpleFields = ['chapter', 'title', 'subtitle', 'hostName', 'street', 'postalCode', 'city', 'email', 'sponsorName'];
         simpleFields.forEach(function (field) {
           const input = document.getElementById(field);
           if (input && editData[field]) {
@@ -1662,6 +1677,13 @@
             console.log('⚠️ ' + field + ': non trouvé ou vide');
           }
         });
+
+        // Compatibilité : anciennes covers sauvegardées avant la séparation rue/CP/ville
+        // (elles n'ont qu'un champ "address" unique) -> on le met tel quel dans "Rue"
+        if (!editData.street && editData.address) {
+          document.getElementById('street').value = editData.address;
+          console.log('✅ street (compat depuis address): ' + editData.address);
+        }
 
         // Charger le logo sponsor (aperçu + valeur cachée)
         if (editData.sponsorLogo) {
