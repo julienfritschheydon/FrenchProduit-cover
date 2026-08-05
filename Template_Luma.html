@@ -7,7 +7,7 @@
   <title>Cover</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
   <style type="text/css">
     body {
@@ -20,34 +20,36 @@
     }
 
     .main-container {
-      background-color: #132A66;
+      background-color: #0F3D7E;
       width: 1440px;
       height: 1440px;
       position: relative;
       box-sizing: border-box;
-      padding: 72px 84px;
-      font-family: Poppins;
+      font-family: Montserrat;
       color: #ffffff;
       overflow: hidden;
     }
 
-    .top-row {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
+    .logo-container {
+      position: absolute;
+      top: 89px;
+      left: 60px;
     }
 
     .logo-container svg {
-      width: 288px;
+      width: 473px;
       height: auto;
     }
 
     .sponsor-box {
+      position: absolute;
+      top: 10px;
+      right: 60px;
       text-align: center;
     }
 
     .sponsor-box .sponsor-label {
-      font-size: 17px;
+      font-size: 20px;
       font-weight: 700;
       letter-spacing: 1px;
       margin-bottom: 10px;
@@ -55,7 +57,7 @@
 
     .sponsor-box .sponsor-name {
       background: #ffffff;
-      color: #132A66;
+      color: #0F3D7E;
       font-weight: 700;
       font-size: 24px;
       padding: 12px 22px;
@@ -72,98 +74,106 @@
 
     .sponsor-box .sponsor-logo img {
       display: block;
-      max-width: 192px;
-      max-height: 72px;
+      max-width: 200px;
+      max-height: 60px;
       object-fit: contain;
     }
 
     .tags-row {
+      position: absolute;
+      top: 201px;
+      left: 60px;
       display: flex;
-      gap: 14px;
-      margin-top: 34px;
+      gap: 12px;
     }
 
     .tag {
-      font-family: Poppins;
-      font-size: 24px;
+      font-family: Montserrat;
+      font-size: 32px;
       font-weight: 700;
-      padding: 12px 22px;
+      padding: 10px 20px;
       border-radius: 10px;
     }
 
     .tag.tag-fill {
-      background: #E4573D;
+      background: #EA4335;
       color: #ffffff;
     }
 
     .tag.tag-outline {
       background: transparent;
-      color: #ffffff;
+      color: #FBFCFF;
       border: 2px solid #ffffff;
     }
 
     .title-wrap {
-      margin-top: 43px;
+      position: absolute;
+      top: 334px;
+      left: 60px;
+      right: 60px;
       text-align: center;
     }
 
     .title-wrap p {
       margin: 0 auto;
-      max-width: 1140px;
-      font-family: Poppins;
+      font-family: Montserrat;
       font-weight: 800;
-      font-size: 67px;
-      line-height: 79px;
+      font-size: 64px;
+      line-height: 74px;
       text-transform: uppercase;
       letter-spacing: -0.6px;
+      color: #F2F2F2;
     }
 
     .title-wrap p.long-title {
-      font-size: 53px;
-      line-height: 65px;
+      font-size: 50px;
+      line-height: 60px;
     }
 
     .title-wrap p.very-long-title {
-      font-size: 41px;
-      line-height: 53px;
+      font-size: 38px;
+      line-height: 48px;
     }
 
     .separator-event {
       width: 108px;
       height: 7px;
-      background: #E4573D;
+      background: #EA4335;
       margin: 34px auto 0;
     }
 
     .subtitle-wrap {
       text-align: center;
       margin-top: 22px;
-      font-family: Poppins;
-      font-size: 29px;
-      font-weight: 400;
-      line-height: 38px;
+      font-family: Montserrat;
+      font-size: 28px;
+      font-weight: 500;
+      line-height: 36px;
       color: #cfd6ea;
     }
 
     .speakers-row {
+      position: absolute;
+      top: 666px;
+      left: 60px;
+      right: 60px;
       display: flex;
-      align-items: flex-end;
+      align-items: flex-start;
       justify-content: center;
       gap: 72px;
-      margin-top: 48px;
     }
 
     .speaker-card {
       position: relative;
-      width: 288px;
+      width: 313px;
       flex: 0 0 auto;
     }
 
     .speaker-photo {
-      width: 288px;
-      height: 312px;
+      width: 313px;
+      height: 418px;
       object-fit: cover;
-      border-radius: 5px;
+      border-radius: 4px;
       display: block;
     }
 
