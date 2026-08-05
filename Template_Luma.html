@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cover</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style type="text/css">
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+
+    .main-container {
+      background-color: #132A66;
+      width: 1200px;
+      height: 1200px;
+      position: relative;
+      box-sizing: border-box;
+      padding: 60px 70px;
+      font-family: Poppins;
+      color: #ffffff;
+    }
+
+    .top-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .logo-container svg {
+      width: 240px;
+      height: auto;
+    }
+
+    .sponsor-box {
+      text-align: center;
+    }
+
+    .sponsor-box .sponsor-label {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .sponsor-box .sponsor-name {
+      background: #ffffff;
+      color: #132A66;
+      font-weight: 700;
+      font-size: 20px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      display: inline-block;
+    }
+
+    .sponsor-box .sponsor-logo {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 10px 18px;
+      display: inline-block;
+    }
+
+    .sponsor-box .sponsor-logo img {
+      display: block;
+      max-width: 160px;
+      max-height: 60px;
+      object-fit: contain;
+    }
+
+    .tags-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 40px;
+    }
+
+    .tag {
+      font-family: Poppins;
+      font-size: 20px;
+      font-weight: 700;
+      padding: 10px 18px;
+      border-radius: 8px;
+    }
+
+    .tag.tag-fill {
+      background: #E4573D;
+      color: #ffffff;
+    }
+
+    .tag.tag-outline {
+      background: transparent;
+      color: #ffffff;
+      border: 2px solid #ffffff;
+    }
+
+    .title-wrap {
+      margin-top: 60px;
+      text-align: center;
+    }
+
+    .title-wrap p {
+      margin: 0 auto;
+      max-width: 950px;
+      font-family: Poppins;
+      font-weight: 800;
+      font-size: 56px;
+      line-height: 66px;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+    }
+
+    .title-wrap p.long-title {
+      font-size: 44px;
+      line-height: 54px;
+    }
+
+    .title-wrap p.very-long-title {
+      font-size: 34px;
+      line-height: 44px;
+    }
+
+    .separator-event {
+      width: 90px;
+      height: 6px;
+      background: #E4573D;
+      margin: 40px auto 0;
+    }
+
+    .subtitle-wrap {
+      text-align: center;
+      margin-top: 24px;
+      font-family: Poppins;
+      font-size: 24px;
+      font-weight: 400;
+      line-height: 32px;
+      color: #cfd6ea;
+    }
+
+    .speakers-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 60px;
+      margin-top: 70px;
+    }
+
+    .speaker-card {
+      position: relative;
+      width: 260px;
+      flex: 0 0 auto;
+    }
+
+    .speaker-photo {
+      width: 260px;
+      height: 320px;
+      object-fit: cover;
+      border-radius: 4px;
+      display: block;
+    }
+
+    .speaker-tags {
+      position: absolute;
+      bottom: -22px;
+      left: 10px;
+      max-width: 90%;
+    }
+
+    .speaker-tags .tag-name {
+      background: #E4573D;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 18px;
+      padding: 8px 14px;
+      border-radius: 4px;
+      transform: rotate(-3deg);
+      box-shadow: -3px 3px 0px 0px rgba(255, 255, 255, 0.3);
+      white-space: nowrap;
+      display: inline-block;
+    }
+
+    .speaker-tags .tag-title {
+      background: #f3b8ab;
+      color: #132A66;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 6px 12px;
+      border-radius: 4px;
+      transform: rotate(-1deg);
+      margin-top: 6px;
+      margin-left: 6px;
+      white-space: nowrap;
+      display: inline-block;
+    }
+
+    /* Ajustement de la taille des cartes selon le nombre de speakers, pour éviter tout chevauchement */
+    .speakers-row.count-2 {
+      gap: 45px;
+      margin-top: 90px;
+    }
+
+    .speakers-row.count-2 .speaker-card {
+      width: 220px;
+    }
+
+    .speakers-row.count-2 .speaker-photo {
+      width: 220px;
+      height: 270px;
+    }
+
+    .speakers-row.count-3 {
+      gap: 36px;
+      margin-top: 100px;
+    }
+
+    .speakers-row.count-3 .speaker-card {
+      width: 190px;
+    }
+
+    .speakers-row.count-3 .speaker-photo {
+      width: 190px;
+      height: 230px;
+    }
+
+    .speakers-row.count-3 .speaker-tags .tag-name {
+      font-size: 15px;
+      padding: 6px 10px;
+    }
+
+    .speakers-row.count-3 .speaker-tags .tag-title {
+      font-size: 12px;
+      padding: 5px 9px;
+    }
+
+    .speakers-row.count-4 {
+      gap: 26px;
+      margin-top: 110px;
+    }
+
+    .speakers-row.count-4 .speaker-card {
+      width: 160px;
+    }
+
+    .speakers-row.count-4 .speaker-photo {
+      width: 160px;
+      height: 195px;
+    }
+
+    .speakers-row.count-4 .speaker-tags .tag-name {
+      font-size: 13px;
+      padding: 5px 9px;
+    }
+
+    .speakers-row.count-4 .speaker-tags .tag-title {
+      font-size: 11px;
+      padding: 4px 8px;
+    }
+
+    .footer-row {
+      position: absolute;
+      bottom: 60px;
+      left: 70px;
+      right: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: Poppins;
+    }
+
+    .footer-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .footer-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .footer-line .accent {
+      color: #E4573D;
+    }
+
+    .footer-divider {
+      width: 2px;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .footer-col.location {
+      text-align: right;
+      align-items: flex-end;
+    }
+
+    .footer-line.host-name {
+      font-weight: 700;
+    }
+
+    .footer-line.address {
+      font-size: 18px;
+      font-weight: 400;
+      color: #cfd6ea;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="main-container">
+    <div class="top-row">
+      <div class="logo-container">
+        <svg viewBox="0 0 332 53" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M193.446 40.4095C191.649 40.4095 190.75 39.4828 190.75 37.6295V13.1157C190.75 11.2905 191.663 10.3779 193.488 10.3779H203.639C206.896 10.3779 209.409 11.1922 211.178 12.8209C212.947 14.4495 213.832 16.724 213.832 19.6443C213.832 22.5646 212.947 24.8531 211.178 26.5099C209.409 28.1385 206.896 28.9528 203.639 28.9528H196.141V37.6295C196.141 39.4828 195.243 40.4095 193.446 40.4095ZM196.141 24.6987H202.796C206.671 24.6987 208.609 23.0139 208.609 19.6443C208.609 16.3028 206.671 14.632 202.796 14.632H196.141V24.6987Z"
+            fill="#E16861" />
+          <path
+            d="M220.006 40.4095C218.209 40.4095 217.31 39.5109 217.31 37.7138V21.7924C217.31 20.0234 218.166 19.1389 219.879 19.1389C221.592 19.1389 222.449 20.0234 222.449 21.7924V23.0981C223.459 20.6833 225.622 19.3354 228.935 19.0546C230.143 18.9142 230.816 19.6022 230.957 21.1185C231.097 22.6067 230.367 23.4351 228.767 23.6036L227.84 23.6878C224.386 24.0248 222.659 25.7938 222.659 28.9949V37.7138C222.659 39.5109 221.775 40.4095 220.006 40.4095Z"
+            fill="#E16861" />
+          <path
+            d="M242.868 40.4937C240.734 40.4937 238.881 40.0585 237.308 39.188C235.736 38.3175 234.514 37.082 233.644 35.4814C232.773 33.8528 232.338 31.9433 232.338 29.7531C232.338 27.5629 232.773 25.6675 233.644 24.0669C234.514 22.4663 235.736 21.2308 237.308 20.3603C238.881 19.4899 240.734 19.0546 242.868 19.0546C245.002 19.0546 246.855 19.4899 248.428 20.3603C250 21.2308 251.222 22.4663 252.092 24.0669C252.963 25.6675 253.398 27.5629 253.398 29.7531C253.398 31.9433 252.963 33.8528 252.092 35.4814C251.222 37.082 250 38.3175 248.428 39.188C246.855 40.0585 245.002 40.4937 242.868 40.4937ZM242.868 36.4923C244.44 36.4923 245.704 35.9307 246.659 34.8075C247.613 33.6562 248.091 31.9714 248.091 29.7531C248.091 27.5067 247.613 25.8359 246.659 24.7408C245.704 23.6176 244.44 23.056 242.868 23.056C241.295 23.056 240.032 23.6176 239.077 24.7408C238.122 25.8359 237.645 27.5067 237.645 29.7531C237.645 31.9714 238.122 33.6562 239.077 34.8075C240.032 35.9307 241.295 36.4923 242.868 36.4923Z"
+            fill="#E16861" />
+          <path
+            d="M65.5486 40.3673C64.3131 40.3673 63.6953 39.7355 63.6953 38.4719V12.2732C63.6953 11.0096 64.3271 10.3778 65.5907 10.3778H80.8803C81.8631 10.3778 82.3545 10.8552 82.3545 11.8099C82.3545 12.7927 81.8631 13.2841 80.8803 13.2841H67.1492V23.6456H79.9958C81.0066 23.6456 81.5121 24.123 81.5121 25.0777C81.5121 26.0605 81.0066 26.5519 79.9958 26.5519H67.1492V38.4719C67.1492 39.7355 66.6156 40.3673 65.5486 40.3673Z"
+            fill="white" />
+          <path
+            d="M87.6231 40.3673C86.4718 40.3673 85.8962 39.7776 85.8962 38.5982V21.0342C85.8962 19.8829 86.4437 19.3073 87.5389 19.3073C88.6621 19.3073 89.2237 19.8829 89.2237 21.0342V23.2666C89.7853 21.9749 90.6557 20.9921 91.8351 20.3182C93.0145 19.6162 94.4185 19.2371 96.0471 19.1809C96.9457 19.0967 97.423 19.546 97.4792 20.5288C97.5634 21.5116 97.058 22.0591 95.9629 22.1714L95.289 22.2557C93.3514 22.4242 91.8772 23.0419 90.8663 24.109C89.8555 25.1479 89.35 26.58 89.35 28.4052V38.5982C89.35 39.7776 88.7744 40.3673 87.6231 40.3673Z"
+            fill="white" />
+          <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M26.3906 29.7218C26.4095 29.7218 26.4283 29.7219 26.4472 29.7219C34.6546 29.7219 41.3081 23.0684 41.3081 14.861C41.3081 6.65354 34.6546 9.15527e-05 26.4472 9.15527e-05C26.4283 9.15527e-05 26.4095 0.000126688 26.3906 0.000196897V6.79383C26.4095 6.7937 26.4283 6.79364 26.4472 6.79364C30.9027 6.79364 34.5145 10.4055 34.5145 14.861C34.5145 19.3164 30.9027 22.9283 26.4472 22.9283C26.4283 22.9283 26.4095 22.9283 26.3906 22.9281V29.7218Z"
+            fill="#E16861" />
+          <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M26.3922 0C18.2101 0.0297697 11.5865 6.67176 11.5865 14.8608V14.861H11.5848V22.9283H3.51642V22.9301C3.47949 22.9289 3.44242 22.9283 3.4052 22.9283C1.52922 22.9283 0.0078125 24.4491 0.0078125 26.325C0.0078125 28.201 1.52922 29.7218 3.4052 29.7218C3.44242 29.7218 3.47949 29.7212 3.51642 29.72V29.7219H11.582V37.5599C11.5834 37.6105 11.5843 37.6612 11.5848 37.7121V37.7892H11.5852C11.5852 37.7893 11.5852 37.7893 11.5852 37.7893C11.5852 42.2274 8.00136 45.8285 3.56982 45.8565V45.8598C3.51528 45.8572 3.46039 45.8559 3.4052 45.8559C1.52922 45.8559 0.0078125 47.3766 0.0078125 49.2526C0.0078125 51.1286 1.52922 52.6494 3.4052 52.6494C3.46039 52.6494 3.51528 52.6481 3.56982 52.6455V52.6501C11.7534 52.6221 18.3787 45.9794 18.3787 37.7893C18.3787 37.7543 18.3786 37.7194 18.3783 37.6844V29.7219H26.4447V22.9283H18.38V14.9176H18.3803L18.3801 14.8608C18.3801 10.4237 21.9621 6.82333 26.3922 6.79363V0Z"
+            fill="white" />
+        </svg>
+      </div>
+      <? if (data.sponsorLogo || data.sponsorName) { ?>
+      <div class="sponsor-box">
+        <div class="sponsor-label">SPONSOR</div>
+        <? if (data.sponsorLogo) { ?>
+        <div class="sponsor-logo">
+          <img src="<?!= data.sponsorLogo ?>" alt="<?= data.sponsorName ?>">
+        </div>
+        <? } else { ?>
+        <div class="sponsor-name">
+          <?= data.sponsorName ?>
+        </div>
+        <? } ?>
+      </div>
+      <? } ?>
+    </div>
+
+    <div class="tags-row">
+      <div class="tag tag-fill">#
+        <?= data.chapter ?>
+      </div>
+      <div class="tag tag-outline">#
+        <?= data.eventType ?>
+      </div>
+    </div>
+
+    <?
+      var titleLength = data.title.length;
+      var titleClass = '';
+      if (titleLength > 70) {
+        titleClass = 'very-long-title';
+      } else if (titleLength > 50) {
+        titleClass = 'long-title';
+      }
+    ?>
+    <div class="title-wrap">
+      <p class="<?= titleClass ?>">
+        <?= data.title ?>
+      </p>
+      <div class="separator-event"></div>
+      <? if (data.subtitle) { ?>
+      <div class="subtitle-wrap">
+        <?!= data.subtitle ?>
+      </div>
+      <? } ?>
+    </div>
+
+    <?
+      var speakerCountLuma = Math.min(data.speakers.length, 4);
+    ?>
+    <div class="speakers-row count-<?= speakerCountLuma ?>">
+      <? for (var i = 0; i < data.speakers.length && i < 4; i++) {
+           var speaker = data.speakers[i];
+      ?>
+      <div class="speaker-card">
+        <img src="<?!= speaker.photo ?>" alt="<?= speaker.name ?>" class="speaker-photo"
+          onerror="this.onerror=null; this.src='https://via.placeholder.com/300?text=Photo';">
+        <div class="speaker-tags">
+          <div class="tag-name">
+            <?= speaker.name ?>
+          </div>
+          <? if (speaker.title) { ?>
+          <div class="tag-title">
+            <?= speaker.title ?>
+          </div>
+          <? } ?>
+        </div>
+      </div>
+      <? } ?>
+    </div>
+
+    <div class="footer-row">
+      <div class="footer-col">
+        <div class="footer-line">
+          <span>
+            <?= data.date ?>
+          </span>
+        </div>
+        <div class="footer-line">
+          <span class="accent">
+            <?= data.time ?>
+          </span>
+        </div>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-col location">
+        <div class="footer-line host-name">
+          <?= data.hostName ?>
+        </div>
+        <div class="footer-line address">
+          <?= data.address ?>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

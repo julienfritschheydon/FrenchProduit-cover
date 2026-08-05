@@ -82,8 +82,9 @@ function generatePreviewHTML(data) {
     var template, htmlContent;
 
     try {
-      Logger.log('  - Chargement du fichier Template_Universal...');
-      template = HtmlService.createTemplateFromFile('Template_Universal');
+      var templateFile = getTemplateFileName(dataCopy);
+      Logger.log('  - Chargement du fichier ' + templateFile + '...');
+      template = HtmlService.createTemplateFromFile(templateFile);
       Logger.log('  ✅ Template chargé avec succès');
 
       Logger.log('  - Attribution des données au template...');
@@ -149,6 +150,11 @@ function generatePreviewHTML(data) {
     // Re-lancer l'erreur pour qu'elle soit transmise au client
     throw error;
   }
+}
+
+// Choix du fichier template HTML selon data.template
+function getTemplateFileName(data) {
+  return (data && data.template === 'luma') ? 'Template_Luma' : 'Template_Universal';
 }
 
 // WEB APP ENTRY POINT
@@ -330,6 +336,23 @@ function convertPhotosToUrls(formData) {
     }
   }
 
+  // Logo sponsor (même logique que les photos speakers, sur un champ unique)
+  if (formData.sponsorLogo && formData.sponsorLogo.indexOf('data:image') === 0) {
+    Logger.log('Logo sponsor: photo base64 détectée');
+    try {
+      var sponsorBlob = base64ToBlob(formData.sponsorLogo);
+      var sponsorExtension = sponsorBlob.getContentType() === 'image/png' ? '.png' : '.jpg';
+      var sponsorFileName = 'sponsor_' + new Date().getTime() + sponsorExtension;
+      var sponsorFile = folder.createFile(sponsorBlob.setName(sponsorFileName));
+      sponsorFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      formData.sponsorLogo = 'https://drive.google.com/uc?export=view&id=' + sponsorFile.getId();
+      Logger.log('  → URL générée: ' + formData.sponsorLogo);
+    } catch (error) {
+      Logger.log('  ❌ ERREUR lors de l\'upload du logo sponsor: ' + error.message);
+      throw error;
+    }
+  }
+
   Logger.log('=== FIN CONVERSION PHOTOS ===');
   return formData;
 }
@@ -452,12 +475,34 @@ function generateCoverHTML(data) {
     }
   }
 
+  // Logo sponsor : même conversion Drive → base64
+  if (dataCopy.sponsorLogo && dataCopy.sponsorLogo.indexOf('drive.google.com') > -1) {
+    if (photoCache[dataCopy.sponsorLogo]) {
+      Logger.log('  - Logo sponsor: en cache ⚡');
+      dataCopy.sponsorLogo = photoCache[dataCopy.sponsorLogo];
+    } else {
+      try {
+        var sponsorResponse = UrlFetchApp.fetch(dataCopy.sponsorLogo, { muteHttpExceptions: true });
+        var sponsorBlob = sponsorResponse.getBlob();
+        if (sponsorBlob.getContentType().indexOf('image') > -1) {
+          var sponsorBase64 = Utilities.base64Encode(sponsorBlob.getBytes());
+          var sponsorDataUrl = 'data:' + sponsorBlob.getContentType() + ';base64,' + sponsorBase64;
+          photoCache[dataCopy.sponsorLogo] = sponsorDataUrl;
+          dataCopy.sponsorLogo = sponsorDataUrl;
+          Logger.log('  ✅ Logo sponsor converti');
+        }
+      } catch (error) {
+        Logger.log('  ❌ Logo sponsor: Erreur - ' + error.message);
+      }
+    }
+  }
+
   var conversionTime = ((new Date().getTime() - conversionStart) / 1000).toFixed(2);
   Logger.log('  ⏱️ Conversion photos: ' + conversionTime + 's');
 
   // ÉTAPE 2: Générer le HTML avec les images en base64
   var templateStart = new Date().getTime();
-  var template = HtmlService.createTemplateFromFile('Template_Universal');
+  var template = HtmlService.createTemplateFromFile(getTemplateFileName(dataCopy));
   template.data = dataCopy;
 
   var htmlContent = template.evaluate().getContent();
