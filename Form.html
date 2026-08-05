@@ -729,6 +729,9 @@
     const MAX_SPEAKERS = 4;
     let speakerCount = 0;
 
+    // Photo de secours (via.placeholder.com est mort depuis 2024) - SVG local, ne dépend d'aucun service externe
+    const PLACEHOLDER_PHOTO = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><rect width="100%25" height="100%25" fill="%23cccccc"/><text x="50%25" y="50%25" font-family="sans-serif" font-size="28" fill="%23666666" text-anchor="middle" dominant-baseline="middle">Photo</text></svg>';
+
     // ============================================
     // OUTILS DE DÉVELOPPEMENT
     // ============================================
@@ -756,12 +759,12 @@
               {
                 name: 'John Doe',
                 title: 'Expert en Tests',
-                photo: 'https://via.placeholder.com/300?text=John+Doe'
+                photo: PLACEHOLDER_PHOTO
               },
               {
                 name: 'Jane Smith',
                 title: 'Spécialiste QA',
-                photo: 'https://via.placeholder.com/300?text=Jane+Smith'
+                photo: PLACEHOLDER_PHOTO
               }
             ]
           };
@@ -1211,7 +1214,7 @@
         '<div class="form-group">' +
         '<label>Photo <span class="required">*</span></label>' +
         '<input type="file" name="speaker_' + speakerCount + '_photo" accept="image/*" required onchange="handlePhotoUpload(this, ' + speakerCount + ')">' +
-        '<div class="help-text">Format carré recommandé (JPG, PNG). Max 2MB</div>' +
+        '<div class="help-text">Format carré recommandé (JPG, PNG). Max 2MB. La photo n\'est pas détourée automatiquement (pas de suppression du fond) : elle est juste recadrée en rectangle.</div>' +
         '<input type="hidden" name="speaker_' + speakerCount + '_photo_data" id="speaker_' + speakerCount + '_photo_data">' +
         '<div id="speaker_' + speakerCount + '_preview" style="margin-top: 10px;"></div>' +
         '</div>';
@@ -1482,10 +1485,7 @@
           data.speakers.push({
             name: name,
             title: title || '',
-            // Pour la preview, utiliser un placeholder léger au lieu du base64
-            photo: isPreview
-              ? 'https://via.placeholder.com/300?text=' + encodeURIComponent(name.substring(0, 20))
-              : photoData
+            photo: photoData
           });
         }
       }
@@ -1496,12 +1496,16 @@
       console.log('  - Subtitle length:', data.subtitle ? data.subtitle.length : 0);
       console.log('  - Subtitle JSON:', JSON.stringify(data.subtitle));
       console.log('  - Is Preview:', isPreview);
-      console.log('  - Photo type:', isPreview ? 'Placeholder' : 'Base64');
 
       return data;
     }
 
     function validateFormData(data) {
+      if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+        showAlert('❌ Un email valide est requis pour recevoir la cover', 'error');
+        return false;
+      }
+
       if (data.speakers.length === 0) {
         showAlert('Au moins un speaker est requis', 'error');
         return false;

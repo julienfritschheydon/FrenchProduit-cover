@@ -7,7 +7,7 @@
   <title>Cover</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
   <style type="text/css">
     body {
@@ -20,148 +20,158 @@
     }
 
     .main-container {
-      background-color: #132A66;
-      width: 1200px;
-      height: 1200px;
+      background-color: #0F3D7E;
+      width: 1440px;
+      height: 1440px;
       position: relative;
       box-sizing: border-box;
-      padding: 60px 70px;
-      font-family: Poppins;
+      font-family: Montserrat;
       color: #ffffff;
       overflow: hidden;
     }
 
-    .top-row {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
+    .logo-container {
+      position: absolute;
+      top: 89px;
+      left: 60px;
     }
 
     .logo-container svg {
-      width: 240px;
+      width: 473px;
       height: auto;
     }
 
     .sponsor-box {
+      position: absolute;
+      top: 10px;
+      right: 60px;
       text-align: center;
     }
 
     .sponsor-box .sponsor-label {
-      font-size: 14px;
+      font-size: 20px;
       font-weight: 700;
       letter-spacing: 1px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .sponsor-box .sponsor-name {
       background: #ffffff;
-      color: #132A66;
+      color: #0F3D7E;
       font-weight: 700;
-      font-size: 20px;
-      padding: 10px 18px;
-      border-radius: 8px;
+      font-size: 24px;
+      padding: 12px 22px;
+      border-radius: 10px;
       display: inline-block;
     }
 
     .sponsor-box .sponsor-logo {
       background: #ffffff;
-      border-radius: 8px;
-      padding: 10px 18px;
+      border-radius: 10px;
+      padding: 12px 22px;
       display: inline-block;
     }
 
     .sponsor-box .sponsor-logo img {
       display: block;
-      max-width: 160px;
+      max-width: 200px;
       max-height: 60px;
       object-fit: contain;
     }
 
     .tags-row {
+      position: absolute;
+      top: 201px;
+      left: 60px;
       display: flex;
       gap: 12px;
-      margin-top: 28px;
     }
 
     .tag {
-      font-family: Poppins;
-      font-size: 20px;
+      font-family: Montserrat;
+      font-size: 32px;
       font-weight: 700;
-      padding: 10px 18px;
-      border-radius: 8px;
+      padding: 10px 20px;
+      border-radius: 10px;
     }
 
     .tag.tag-fill {
-      background: #E4573D;
+      background: #EA4335;
       color: #ffffff;
     }
 
     .tag.tag-outline {
       background: transparent;
-      color: #ffffff;
+      color: #FBFCFF;
       border: 2px solid #ffffff;
     }
 
     .title-wrap {
-      margin-top: 36px;
+      position: absolute;
+      top: 334px;
+      left: 60px;
+      right: 60px;
       text-align: center;
     }
 
     .title-wrap p {
       margin: 0 auto;
-      max-width: 950px;
-      font-family: Poppins;
+      font-family: Montserrat;
       font-weight: 800;
-      font-size: 56px;
-      line-height: 66px;
+      font-size: 64px;
+      line-height: 74px;
       text-transform: uppercase;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.6px;
+      color: #F2F2F2;
     }
 
     .title-wrap p.long-title {
-      font-size: 44px;
-      line-height: 54px;
+      font-size: 50px;
+      line-height: 60px;
     }
 
     .title-wrap p.very-long-title {
-      font-size: 34px;
-      line-height: 44px;
+      font-size: 38px;
+      line-height: 48px;
     }
 
     .separator-event {
-      width: 90px;
-      height: 6px;
-      background: #E4573D;
-      margin: 28px auto 0;
+      width: 108px;
+      height: 7px;
+      background: #EA4335;
+      margin: 34px auto 0;
     }
 
     .subtitle-wrap {
       text-align: center;
-      margin-top: 18px;
-      font-family: Poppins;
-      font-size: 24px;
-      font-weight: 400;
-      line-height: 32px;
+      margin-top: 22px;
+      font-family: Montserrat;
+      font-size: 28px;
+      font-weight: 500;
+      line-height: 36px;
       color: #cfd6ea;
     }
 
     .speakers-row {
+      position: absolute;
+      top: 666px;
+      left: 60px;
+      right: 60px;
       display: flex;
-      align-items: flex-end;
+      align-items: flex-start;
       justify-content: center;
-      gap: 60px;
-      margin-top: 40px;
+      gap: 72px;
     }
 
     .speaker-card {
       position: relative;
-      width: 240px;
+      width: 313px;
       flex: 0 0 auto;
     }
 
     .speaker-photo {
-      width: 240px;
-      height: 260px;
+      width: 313px;
+      height: 418px;
       object-fit: cover;
       border-radius: 4px;
       display: block;
@@ -169,134 +179,78 @@
 
     .speaker-tags {
       position: absolute;
-      bottom: -22px;
-      left: 10px;
-      max-width: 90%;
+      bottom: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      transform: rotate(5deg);
+      transform-origin: bottom left;
     }
 
     .speaker-tags .tag-name {
-      background: #E4573D;
+      background: #EA4335;
       color: #ffffff;
       font-weight: 700;
-      font-size: 18px;
-      padding: 8px 14px;
-      border-radius: 4px;
-      transform: rotate(-3deg);
-      box-shadow: -3px 3px 0px 0px rgba(255, 255, 255, 0.3);
+      font-size: 22px;
+      padding: 10px 17px;
       white-space: nowrap;
-      display: inline-block;
+      text-transform: uppercase;
     }
 
     .speaker-tags .tag-title {
       background: #f3b8ab;
-      color: #132A66;
+      color: #0F3D7E;
       font-weight: 700;
-      font-size: 14px;
-      padding: 6px 12px;
-      border-radius: 4px;
-      transform: rotate(-1deg);
-      margin-top: 6px;
-      margin-left: 6px;
+      font-size: 17px;
+      padding: 7px 14px;
       white-space: nowrap;
-      display: inline-block;
+      text-transform: uppercase;
     }
 
-    /* Ajustement de la taille des cartes selon le nombre de speakers, pour éviter tout chevauchement */
+    /* Photos gardent leur taille pleine (313x418) quel que soit le nombre de speakers,
+       confirmé par l'export Figma à 3 personnes (gap=105px, positions symétriques).
+       Seul le gap se resserre pour que 4 speakers tiennent dans les 1320px disponibles. */
     .speakers-row.count-2 {
-      gap: 45px;
-      margin-top: 50px;
-    }
-
-    .speakers-row.count-2 .speaker-card {
-      width: 210px;
-    }
-
-    .speakers-row.count-2 .speaker-photo {
-      width: 210px;
-      height: 240px;
+      gap: 105px;
     }
 
     .speakers-row.count-3 {
-      gap: 36px;
-      margin-top: 55px;
-    }
-
-    .speakers-row.count-3 .speaker-card {
-      width: 180px;
-    }
-
-    .speakers-row.count-3 .speaker-photo {
-      width: 180px;
-      height: 210px;
-    }
-
-    .speakers-row.count-3 .speaker-tags .tag-name {
-      font-size: 15px;
-      padding: 6px 10px;
-    }
-
-    .speakers-row.count-3 .speaker-tags .tag-title {
-      font-size: 12px;
-      padding: 5px 9px;
+      gap: 105px;
     }
 
     .speakers-row.count-4 {
-      gap: 26px;
-      margin-top: 60px;
-    }
-
-    .speakers-row.count-4 .speaker-card {
-      width: 160px;
-    }
-
-    .speakers-row.count-4 .speaker-photo {
-      width: 160px;
-      height: 195px;
-    }
-
-    .speakers-row.count-4 .speaker-tags .tag-name {
-      font-size: 13px;
-      padding: 5px 9px;
-    }
-
-    .speakers-row.count-4 .speaker-tags .tag-title {
-      font-size: 11px;
-      padding: 4px 8px;
+      gap: 22px;
     }
 
     .footer-row {
       position: absolute;
-      bottom: 60px;
-      left: 70px;
-      right: 70px;
+      top: 1173px;
+      left: 84px;
+      right: 60px;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      font-family: Poppins;
+      font-family: Montserrat;
     }
 
     .footer-col {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 24px;
     }
 
     .footer-line {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 22px;
-      font-weight: 600;
+      gap: 12px;
+      font-size: 36px;
+      font-weight: 700;
+      color: #F2F2F2;
     }
 
     .footer-line .accent {
-      color: #E4573D;
-    }
-
-    .footer-divider {
-      width: 2px;
-      height: 60px;
-      background: rgba(255, 255, 255, 0.4);
+      color: #EA4335;
     }
 
     .footer-col.location {
@@ -309,9 +263,16 @@
     }
 
     .footer-line.address {
-      font-size: 18px;
-      font-weight: 400;
-      color: #cfd6ea;
+      font-size: 36px;
+      font-weight: 700;
+      color: #F2F2F2;
+    }
+
+    .footer-divider {
+      width: 2px;
+      height: 88px;
+      background: rgba(255, 255, 255, 0.3);
+      align-self: center;
     }
   </style>
 </head>
@@ -423,7 +384,7 @@
       ?>
       <div class="speaker-card">
         <img src="<?!= speaker.photo ?>" alt="<?= speaker.name ?>" class="speaker-photo"
-          onerror="this.onerror=null; this.src='https://via.placeholder.com/300?text=Photo';">
+          onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;300&quot; height=&quot;300&quot;&gt;&lt;rect width=&quot;100%25&quot; height=&quot;100%25&quot; fill=&quot;%23cccccc&quot;/&gt;&lt;text x=&quot;50%25&quot; y=&quot;50%25&quot; font-family=&quot;sans-serif&quot; font-size=&quot;28&quot; fill=&quot;%23666666&quot; text-anchor=&quot;middle&quot; dominant-baseline=&quot;middle&quot;&gt;Photo&lt;/text&gt;&lt;/svg&gt;';">
         <div class="speaker-tags">
           <div class="tag-name">
             <?= speaker.name ?>

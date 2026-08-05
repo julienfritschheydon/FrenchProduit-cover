@@ -159,7 +159,7 @@ function getTemplateFileName(data) {
 
 // Dimensions du canvas rendu (doivent matcher .main-container dans le fichier template)
 function getTemplateDimensions(data) {
-  return (data && data.template === 'luma') ? { width: 1200, height: 1200 } : { width: 1200, height: 675 };
+  return (data && data.template === 'luma') ? { width: 1440, height: 1440 } : { width: 1200, height: 675 };
 }
 
 // WEB APP ENTRY POINT
