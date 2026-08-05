@@ -43,7 +43,7 @@
 
     .sponsor-box {
       position: absolute;
-      top: 10px;
+      top: 40px;
       right: 60px;
       text-align: center;
     }
@@ -179,12 +179,12 @@
 
     .speaker-tags {
       position: absolute;
-      bottom: 0;
-      left: 0;
+      bottom: 20px;
+      left: 20px;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      transform: rotate(5deg);
+      transform: rotate(-5deg);
       transform-origin: bottom left;
     }
 
@@ -192,20 +192,23 @@
       background: #EA4335;
       color: #ffffff;
       font-weight: 700;
-      font-size: 22px;
-      padding: 10px 17px;
+      font-size: 18px;
+      padding: 8px 14px;
       white-space: nowrap;
       text-transform: uppercase;
+      box-shadow: -6px 6px 0 rgba(0, 0, 0, 0.35);
     }
 
     .speaker-tags .tag-title {
-      background: #f3b8ab;
+      background: #f3d9d4;
       color: #0F3D7E;
       font-weight: 700;
-      font-size: 17px;
-      padding: 7px 14px;
+      font-size: 14px;
+      padding: 6px 12px;
       white-space: nowrap;
       text-transform: uppercase;
+      margin-top: -2px;
+      box-shadow: -6px 6px 0 rgba(0, 0, 0, 0.35);
     }
 
     /* Photos gardent leur taille pleine (313x418) quel que soit le nombre de speakers,
@@ -230,32 +233,38 @@
       right: 60px;
       display: flex;
       align-items: flex-start;
-      justify-content: space-between;
+      justify-content: center;
+      gap: 50px;
       font-family: Montserrat;
     }
 
     .footer-col {
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 20px;
+      align-items: flex-start;
+      text-align: left;
     }
 
+    /* Icône en débord à gauche du texte (hanging indent) : toutes les lignes
+       (avec ou sans icône) partagent le même bord de texte, l'icône dépasse. */
     .footer-line {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      position: relative;
+      padding-left: 44px;
       font-size: 36px;
       font-weight: 700;
       color: #F2F2F2;
     }
 
-    .footer-line .accent {
-      color: #EA4335;
+    .footer-line svg {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
     }
 
-    .footer-col.location {
-      text-align: right;
-      align-items: flex-end;
+    .footer-line .accent {
+      color: #EA4335;
     }
 
     .footer-line.host-name {
@@ -271,7 +280,7 @@
     .footer-divider {
       width: 2px;
       height: 88px;
-      background: rgba(255, 255, 255, 0.3);
+      background: #EA4335;
       align-self: center;
     }
   </style>
@@ -355,6 +364,25 @@
     </div>
 
     <?
+      // "à partir de 18h45" -> préfixe blanc + valeur de l'heure en rouge
+      var timeValueMatch = String(data.time).match(/(\d{1,2}h\d{2})\s*$/);
+      var timeValue = timeValueMatch ? timeValueMatch[1] : data.time;
+      var timePrefix = timeValueMatch ? data.time.substring(0, data.time.length - timeValue.length) : '';
+    ?>
+    <?
+      // Date en toutes lettres (jour de la semaine + numéro + mois + année) à partir du ISO yyyy-mm-dd
+      var displayDate = data.date;
+      if (data.dateISO) {
+        var joursFR = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+        var moisFR = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+        var isoParts = data.dateISO.split('-');
+        var dObj = new Date(Number(isoParts[0]), Number(isoParts[1]) - 1, Number(isoParts[2]));
+        if (!isNaN(dObj.getTime())) {
+          displayDate = joursFR[dObj.getDay()] + ' ' + dObj.getDate() + ' ' + moisFR[dObj.getMonth()] + ' ' + dObj.getFullYear();
+        }
+      }
+    ?>
+    <?
       var titleLength = data.title.length;
       var titleClass = '';
       if (titleLength > 70) {
@@ -402,23 +430,36 @@
     <div class="footer-row">
       <div class="footer-col">
         <div class="footer-line">
+          <svg width="36" height="39" viewBox="0 0 36 39" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M32 35.1H4V13.65H32M26 0V3.9H10V0H6V3.9H4C1.78 3.9 0 5.6355 0 7.8V35.1C0 36.1343 0.421427 37.1263 1.17157 37.8577C1.92172 38.5891 2.93913 39 4 39H32C33.0609 39 34.0783 38.5891 34.8284 37.8577C35.5786 37.1263 36 36.1343 36 35.1V7.8C36 6.76566 35.5786 5.77368 34.8284 5.04228C34.0783 4.31089 33.0609 3.9 32 3.9H30V0M28 21.45H18V31.2H28V21.45Z" fill="white" />
+          </svg>
           <span>
-            <?= data.date ?>
+            <?= displayDate ?>
           </span>
         </div>
         <div class="footer-line">
-          <span class="accent">
-            <?= data.time ?>
-          </span>
+          <svg width="41" height="41" viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20.1705 0C31.3107 0 40.3411 9.03035 40.3411 20.1705C40.3411 31.3107 31.3107 40.3411 20.1705 40.3411C9.03035 40.3411 0 31.3107 0 20.1705C0 9.03035 9.03035 0 20.1705 0ZM20.1705 4.03411C15.8909 4.03411 11.7865 5.73419 8.76036 8.76036C5.73419 11.7865 4.03411 15.8909 4.03411 20.1705C4.03411 24.4502 5.73419 28.5545 8.76036 31.5807C11.7865 34.6069 15.8909 36.307 20.1705 36.307C24.4502 36.307 28.5545 34.6069 31.5807 31.5807C34.6069 28.5545 36.307 24.4502 36.307 20.1705C36.307 15.8909 34.6069 11.7865 31.5807 8.76036C28.5545 5.73419 24.4502 4.03411 20.1705 4.03411ZM20.1705 8.06821C20.6646 8.06828 21.1414 8.24966 21.5106 8.57795C21.8798 8.90625 22.1157 9.35862 22.1735 9.84927L22.1876 10.0853V19.3355L27.6478 24.7956C28.0095 25.1586 28.2195 25.6457 28.2352 26.1579C28.2508 26.6702 28.0709 27.1691 27.732 27.5535C27.393 27.9379 26.9205 28.1789 26.4103 28.2274C25.9002 28.276 25.3907 28.1286 24.9852 27.8152L24.7956 27.6478L18.7445 21.5966C18.431 21.2828 18.2297 20.8745 18.1716 20.4348L18.1535 20.1705V10.0853C18.1535 9.55031 18.366 9.03727 18.7443 8.65899C19.1225 8.28072 19.6356 8.06821 20.1705 8.06821Z" fill="white" />
+          </svg>
+          <span><?= timePrefix ?><span class="accent"><?= timeValue ?></span></span>
         </div>
       </div>
       <div class="footer-divider"></div>
       <div class="footer-col location">
         <div class="footer-line host-name">
+          <svg width="33" height="38" viewBox="0 0 33 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M16.5002 21.4877C17.8258 21.4877 19.0972 20.9613 20.0348 20.0242C20.9724 19.087 21.4995 17.8159 21.5002 16.4902C21.5002 15.1642 20.9734 13.8924 20.0357 12.9547C19.098 12.017 17.8262 11.4902 16.5002 11.4902C15.1741 11.4902 13.9023 12.017 12.9646 12.9547C12.0269 13.8924 11.5002 15.1642 11.5002 16.4902C11.5008 17.8159 12.0279 19.087 12.9655 20.0242C13.9031 20.9613 15.1745 21.4877 16.5002 21.4877Z" stroke="white" stroke-width="3" stroke-linecap="square" />
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M31.5 16.49C31.5 28.9825 19 36.4775 16.5 36.4775C14 36.4775 1.5 28.9825 1.5 16.49C1.50265 12.5135 3.08417 8.70075 5.89693 5.88986C8.70969 3.07898 12.5235 1.5 16.5 1.5C24.7825 1.5 31.5 8.2125 31.5 16.49Z" stroke="white" stroke-width="3" stroke-linecap="square" />
+          </svg>
           <?= data.hostName ?>
         </div>
         <div class="footer-line address">
-          <?= data.address ?>
+          <? if (data.street) { ?>
+          <?= data.street ?><br>
+          <?= data.postalCode ?> <?= data.city ?>
+          <? } else { ?>
+          <span><?= data.address ?></span>
+          <? } ?>
         </div>
       </div>
     </div>

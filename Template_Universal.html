@@ -377,7 +377,12 @@
         <span style="font-weight: 700;">
           <?= data.hostName ?>
         </span><br>
-        <?= data.address ?></span>
+        <? if (data.street) { ?>
+        <?= data.street ?><br>
+        <?= data.postalCode ?> <?= data.city ?>
+        <? } else { ?>
+        <?= data.address ?>
+        <? } ?>
       </div>
     </div>
     <div class="event_info">
