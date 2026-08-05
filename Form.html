@@ -1502,6 +1502,11 @@
     }
 
     function validateFormData(data) {
+      if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+        showAlert('❌ Un email valide est requis pour recevoir la cover', 'error');
+        return false;
+      }
+
       if (data.speakers.length === 0) {
         showAlert('Au moins un speaker est requis', 'error');
         return false;
