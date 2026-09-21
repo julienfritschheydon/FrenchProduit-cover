@@ -243,40 +243,7 @@
       background: #e0e0e0;
     }
 
-    .btn-both {
-      width: 100%;
-      margin-top: 12px;
-      padding: 14px 24px;
-      border: 2px solid #3D7A9C;
-      border-radius: 6px;
-      background: white;
-      color: #3D7A9C;
-      font-size: 16px;
-      font-weight: 600;
-      font-family: 'Poppins', Arial, sans-serif;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .btn-both:hover {
-      background: #3D7A9C;
-      color: white;
-    }
-
-    .btn-both:disabled {
-      background: #eee;
-      border-color: #ccc;
-      color: #999;
-      cursor: not-allowed;
-    }
-
-    .btn-both.has-errors {
-      border-color: #f44336;
-      color: #f44336;
-    }
-
-    .btn:disabled,
-    .btn-primary:disabled {
+    .btn:disabled {
       background: #ccc;
       cursor: not-allowed;
       transform: none;
@@ -579,6 +546,13 @@
               <input type="radio" name="template" id="template_luma" value="luma">
               Luma 2026 (nouveau)
             </label>
+            <label style="display: flex; align-items: center; gap: 6px; font-weight: 400; cursor: pointer;">
+              <input type="radio" name="template" id="template_both" value="both">
+              Les deux
+            </label>
+          </div>
+          <div class="help-text" id="templateBothHelp" style="display: none;">
+            Génère les deux covers d'un coup, envoyées dans un seul email. L'aperçu montre le template Universal.
           </div>
         </div>
 
@@ -727,12 +701,6 @@
               style="opacity: 0; transition: opacity 0.2s;"></span>
             <span>Générer et envoyer</span>
           </button>
-        </div>
-        <button type="button" class="btn-secondary btn-both" id="submitBothBtn">
-          <span>🎨 Générer les 2 covers (Universal + Luma)</span>
-        </button>
-        <div class="help-text" id="bothHelp" style="text-align: center;">
-          Génère les deux templates d'un coup, dans un seul email. Le choix du template ci-dessus est ignoré.
         </div>
       </form>
 
@@ -943,14 +911,10 @@
         coverForm.addEventListener('submit', handleSubmit);
       }
 
-      const submitBothBtn = document.getElementById('submitBothBtn');
-      if (submitBothBtn) {
-        submitBothBtn.addEventListener('click', function () {
-          // type="button" : pas de validation native, on la déclenche à la main
-          if (!coverForm.reportValidity()) return;
-          handleSubmit(null, 'both');
-        });
-      }
+      document.querySelectorAll('input[name="template"]').forEach(function (radio) {
+        radio.addEventListener('change', updateTemplateHelp);
+      });
+      updateTemplateHelp();
 
       const previewBtn = document.getElementById('previewBtn');
       if (previewBtn) {
@@ -1070,7 +1034,6 @@
     // ============================================
     function checkFormErrors() {
       const submitBtn = document.getElementById('submitBtn');
-      const submitBothBtn = document.getElementById('submitBothBtn');
       if (!submitBtn) return;
 
       let hasErrors = false;
@@ -1085,17 +1048,9 @@
       if (hasErrors) {
         submitBtn.classList.add('has-errors');
         submitBtn.innerHTML = '<span>⚠️ Corriger les erreurs avant de générer</span>';
-        if (submitBothBtn) {
-          submitBothBtn.classList.add('has-errors');
-          submitBothBtn.innerHTML = '<span>⚠️ Corriger les erreurs avant de générer</span>';
-        }
       } else {
         submitBtn.classList.remove('has-errors');
         submitBtn.innerHTML = '<span>Générer et envoyer</span>';
-        if (submitBothBtn) {
-          submitBothBtn.classList.remove('has-errors');
-          submitBothBtn.innerHTML = '<span>🎨 Générer les 2 covers (Universal + Luma)</span>';
-        }
       }
     }
 
@@ -1480,11 +1435,13 @@
     // FORM HANDLING
     // ============================================
 
+    function updateTemplateHelp() {
+      const both = document.getElementById('template_both');
+      document.getElementById('templateBothHelp').style.display = (both && both.checked) ? 'block' : 'none';
+    }
+
     function setSubmitting(isSubmitting) {
-      ['submitBtn', 'submitBothBtn'].forEach(function (id) {
-        const btn = document.getElementById(id);
-        if (btn) btn.disabled = isSubmitting;
-      });
+      document.getElementById('submitBtn').disabled = isSubmitting;
       document.getElementById('loading').classList.toggle('active', isSubmitting);
     }
 
@@ -1519,19 +1476,18 @@
       showAlert('❌ ' + errorMessage, 'error');
     }
 
-    // mode : 'single' (défaut, template choisi dans le formulaire) ou 'both' (Universal + Luma)
-    function handleSubmit(e, mode) {
-      if (e) e.preventDefault();
-      const isBoth = mode === 'both';
+    function handleSubmit(e) {
+      e.preventDefault();
 
       try {
         setSubmitting(true);
-        document.getElementById('loadingText').innerHTML = isBoth
-          ? 'Génération de vos 2 covers en cours...<br>Cela peut prendre une vingtaine de secondes'
-          : 'Génération de votre cover en cours...<br>Cela peut prendre quelques secondes';
 
         // Collecter les données du formulaire
         const formData = collectFormData();
+        const isBoth = formData.template === 'both';
+        document.getElementById('loadingText').innerHTML = isBoth
+          ? 'Génération de vos 2 covers en cours...<br>Cela peut prendre une vingtaine de secondes'
+          : 'Génération de votre cover en cours...<br>Cela peut prendre quelques secondes';
         console.log('Données du formulaire:', formData);
 
         // Validation
@@ -1540,17 +1496,13 @@
           return false;
         }
 
-        console.log('Appel de ' + (isBoth ? 'generateAndEmailBothCovers' : 'generateAndEmailCover') + ' avec les données:', formData);
+        console.log('Appel de generateAndEmailCover avec les données:', formData);
 
         // Appeler le backend
-        const runner = google.script.run
+        google.script.run
           .withSuccessHandler(onSuccess)
-          .withFailureHandler(onError);
-        if (isBoth) {
-          runner.generateAndEmailBothCovers(formData);
-        } else {
-          runner.generateAndEmailCover(formData);
-        }
+          .withFailureHandler(onError)
+          .generateAndEmailCover(formData);
 
         return false; // Empêcher la soumission du formulaire
       } catch (error) {
@@ -1754,9 +1706,10 @@
         console.log('✅ Chargement des données d\'édition...');
 
         // Charger le template choisi
-        const templateRadio = document.getElementById('template_' + (editData.template === 'luma' ? 'luma' : 'universal'));
+        const templateRadio = document.getElementById('template_' + (['luma', 'both'].indexOf(editData.template) > -1 ? editData.template : 'universal'));
         if (templateRadio) {
           templateRadio.checked = true;
+          updateTemplateHelp();
         }
 
         // Charger champs simples (sauf eventType qui nécessite traitement spécial)

@@ -205,13 +205,12 @@ var COVER_TEMPLATES = {
 };
 
 // Exposée au client (google.script.run)
+// formData.template : 'universal' | 'luma' | 'both' (les deux, dans un seul email)
 function generateAndEmailCover(formData) {
-  return runCoverGeneration_(formData, [formData.template === 'luma' ? 'luma' : 'universal']);
-}
-
-// Exposée au client : génère les deux templates d'un coup, envoyés dans un seul email
-function generateAndEmailBothCovers(formData) {
-  return runCoverGeneration_(formData, ['universal', 'luma']);
+  var templates = formData.template === 'both'
+    ? ['universal', 'luma']
+    : [formData.template === 'luma' ? 'luma' : 'universal'];
+  return runCoverGeneration_(formData, templates);
 }
 
 function runCoverGeneration_(formData, templates) {
