@@ -243,7 +243,40 @@
       background: #e0e0e0;
     }
 
-    .btn:disabled {
+    .btn-both {
+      width: 100%;
+      margin-top: 12px;
+      padding: 14px 24px;
+      border: 2px solid #3D7A9C;
+      border-radius: 6px;
+      background: white;
+      color: #3D7A9C;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: 'Poppins', Arial, sans-serif;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-both:hover {
+      background: #3D7A9C;
+      color: white;
+    }
+
+    .btn-both:disabled {
+      background: #eee;
+      border-color: #ccc;
+      color: #999;
+      cursor: not-allowed;
+    }
+
+    .btn-both.has-errors {
+      border-color: #f44336;
+      color: #f44336;
+    }
+
+    .btn:disabled,
+    .btn-primary:disabled {
       background: #ccc;
       cursor: not-allowed;
       transform: none;
@@ -695,11 +728,17 @@
             <span>Générer et envoyer</span>
           </button>
         </div>
+        <button type="button" class="btn-secondary btn-both" id="submitBothBtn">
+          <span>🎨 Générer les 2 covers (Universal + Luma)</span>
+        </button>
+        <div class="help-text" id="bothHelp" style="text-align: center;">
+          Génère les deux templates d'un coup, dans un seul email. Le choix du template ci-dessus est ignoré.
+        </div>
       </form>
 
       <div class="loading-overlay" id="loading">
         <div class="spinner"></div>
-        <p style="color: #333; font-size: 1.2em; margin-top: 15px;">Génération de votre cover en cours...<br>Cela peut
+        <p id="loadingText" style="color: #333; font-size: 1.2em; margin-top: 15px;">Génération de votre cover en cours...<br>Cela peut
           prendre quelques secondes</p>
       </div>
 
@@ -904,6 +943,15 @@
         coverForm.addEventListener('submit', handleSubmit);
       }
 
+      const submitBothBtn = document.getElementById('submitBothBtn');
+      if (submitBothBtn) {
+        submitBothBtn.addEventListener('click', function () {
+          // type="button" : pas de validation native, on la déclenche à la main
+          if (!coverForm.reportValidity()) return;
+          handleSubmit(null, 'both');
+        });
+      }
+
       const previewBtn = document.getElementById('previewBtn');
       if (previewBtn) {
         previewBtn.addEventListener('click', showPreview);
@@ -1022,6 +1070,7 @@
     // ============================================
     function checkFormErrors() {
       const submitBtn = document.getElementById('submitBtn');
+      const submitBothBtn = document.getElementById('submitBothBtn');
       if (!submitBtn) return;
 
       let hasErrors = false;
@@ -1036,9 +1085,17 @@
       if (hasErrors) {
         submitBtn.classList.add('has-errors');
         submitBtn.innerHTML = '<span>⚠️ Corriger les erreurs avant de générer</span>';
+        if (submitBothBtn) {
+          submitBothBtn.classList.add('has-errors');
+          submitBothBtn.innerHTML = '<span>⚠️ Corriger les erreurs avant de générer</span>';
+        }
       } else {
         submitBtn.classList.remove('has-errors');
         submitBtn.innerHTML = '<span>Générer et envoyer</span>';
+        if (submitBothBtn) {
+          submitBothBtn.classList.remove('has-errors');
+          submitBothBtn.innerHTML = '<span>🎨 Générer les 2 covers (Universal + Luma)</span>';
+        }
       }
     }
 
@@ -1423,53 +1480,55 @@
     // FORM HANDLING
     // ============================================
 
+    function setSubmitting(isSubmitting) {
+      ['submitBtn', 'submitBothBtn'].forEach(function (id) {
+        const btn = document.getElementById(id);
+        if (btn) btn.disabled = isSubmitting;
+      });
+      document.getElementById('loading').classList.toggle('active', isSubmitting);
+    }
+
     function onSuccess(result) {
       console.log('Succès:', result);
+      setSubmitting(false);
 
-      // Cacher le spinner
-      document.getElementById('loading').classList.remove('active');
+      // Le serveur attrape ses erreurs et renvoie { success: false, message }
+      if (result && result.success === false) {
+        showAlert('❌ ' + (result.message || 'Une erreur est survenue lors de la génération.'), 'error');
+        return;
+      }
 
-      // Réactiver le bouton
-      const submitBtn = document.getElementById('submitBtn');
-      submitBtn.disabled = false;
-
-      // Remonter en haut de la page
+      // Remonter en haut de la page + message de succès
       window.scrollTo({ top: 0, behavior: 'smooth' });
-
-      // Afficher un message de succès
-      showAlert('✅ Votre cover a été générée et envoyée avec succès à votre adresse email !', 'success');
+      showAlert(
+        (result && result.message && result.message.indexOf('Covers') === 0)
+          ? '✅ Vos 2 covers ont été générées et envoyées avec succès à votre adresse email !'
+          : '✅ Votre cover a été générée et envoyée avec succès à votre adresse email !',
+        'success'
+      );
     }
 
     function onError(error) {
       console.error('Erreur:', error);
+      setSubmitting(false);
 
-      // Cacher le spinner
-      document.getElementById('loading').classList.remove('active');
+      const errorMessage = error && error.message
+        ? 'Erreur: ' + error.message
+        : 'Une erreur inattendue est survenue';
 
-      // Réactiver le bouton
-      const submitBtn = document.getElementById('submitBtn');
-      submitBtn.disabled = false;
-
-      // Afficher un message d'erreur détaillé
-      let errorMessage = 'Une erreur est survenue lors de la génération de votre cover.';
-
-      if (error && error.message) {
-        errorMessage += `<br><small>Détail technique : ${error.message}</small>`;
-      }
-
-      showAlert(`❌ ${errorMessage}`, 'error');
+      showAlert('❌ ' + errorMessage, 'error');
     }
 
-    function handleSubmit(e) {
-      e.preventDefault();
+    // mode : 'single' (défaut, template choisi dans le formulaire) ou 'both' (Universal + Luma)
+    function handleSubmit(e, mode) {
+      if (e) e.preventDefault();
+      const isBoth = mode === 'both';
 
       try {
-        // Désactiver le bouton
-        const submitBtn = document.getElementById('submitBtn');
-        submitBtn.disabled = true;
-
-        // Afficher l'overlay de chargement
-        document.getElementById('loading').classList.add('active');
+        setSubmitting(true);
+        document.getElementById('loadingText').innerHTML = isBoth
+          ? 'Génération de vos 2 covers en cours...<br>Cela peut prendre une vingtaine de secondes'
+          : 'Génération de votre cover en cours...<br>Cela peut prendre quelques secondes';
 
         // Collecter les données du formulaire
         const formData = collectFormData();
@@ -1477,18 +1536,21 @@
 
         // Validation
         if (!validateFormData(formData)) {
-          submitBtn.disabled = false;
-          document.getElementById('loading').classList.remove('active');
+          setSubmitting(false);
           return false;
         }
 
-        console.log('Appel de generateAndEmailCover avec les données:', formData);
+        console.log('Appel de ' + (isBoth ? 'generateAndEmailBothCovers' : 'generateAndEmailCover') + ' avec les données:', formData);
 
         // Appeler le backend
-        google.script.run
+        const runner = google.script.run
           .withSuccessHandler(onSuccess)
-          .withFailureHandler(onError)
-          .generateAndEmailCover(formData);
+          .withFailureHandler(onError);
+        if (isBoth) {
+          runner.generateAndEmailBothCovers(formData);
+        } else {
+          runner.generateAndEmailCover(formData);
+        }
 
         return false; // Empêcher la soumission du formulaire
       } catch (error) {
@@ -1602,20 +1664,6 @@
       return true;
     }
 
-
-    function onError(error) {
-      const loadingEl = document.getElementById('loading');
-      const formEl = document.getElementById('coverForm');
-
-      if (loadingEl) loadingEl.classList.remove('active');
-      if (formEl) formEl.style.display = 'block';
-
-      const errorMessage = error && error.message
-        ? 'Erreur: ' + error.message
-        : 'Une erreur inattendue est survenue';
-
-      showAlert('❌ ' + errorMessage, 'error');
-    }
 
     function showAlert(message, type) {
       const alertBox = document.getElementById('alertBox');
