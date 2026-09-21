@@ -199,10 +199,26 @@ function doGet(e) {
 // MAIN GENERATION FUNCTION
 // ============================================
 
+var COVER_TEMPLATES = {
+  universal: 'Universal',
+  luma: 'Luma 2026'
+};
+
+// Exposée au client (google.script.run)
 function generateAndEmailCover(formData) {
+  return runCoverGeneration_(formData, [formData.template === 'luma' ? 'luma' : 'universal']);
+}
+
+// Exposée au client : génère les deux templates d'un coup, envoyés dans un seul email
+function generateAndEmailBothCovers(formData) {
+  return runCoverGeneration_(formData, ['universal', 'luma']);
+}
+
+function runCoverGeneration_(formData, templates) {
   var dataFileId = null;
+  var isBoth = templates.length > 1;
   try {
-    Logger.log('=== GÉNÉRATION COVER ===');
+    Logger.log('=== GÉNÉRATION COVER (' + templates.join(' + ') + ') ===');
     Logger.log('📋 Titre: ' + formData.title);
     Logger.log('📝 Sous-titre: ' + (formData.subtitle || '(vide)'));
     Logger.log('📍 Chapter: ' + formData.chapter);
@@ -211,31 +227,40 @@ function generateAndEmailCover(formData) {
     // 1. Valider les données
     validateFormData(formData);
 
-    // 2. Convertir les photos base64 en URLs Drive
+    // 2. Convertir les photos base64 en URLs Drive (une seule fois, partagé par tous les templates)
     formData = convertPhotosToUrls(formData);
 
     // 3. Sauvegarder les données dans Drive (historique + lien court)
     // IMPORTANT: Sauvegarder AVANT conversion pour avoir le lien en cas d'erreur
+    // Un seul fichier / un seul lien d'édition, même pour "les deux covers"
     var dataFile = saveFormDataToDrive(formData);
     dataFileId = dataFile.getId();
     Logger.log('✅ Données sauvegardées: ' + dataFile.getName() + ' (ID: ' + dataFileId + ')');
 
-    // 4. Générer HTML avec template approprié
-    var htmlContent = generateCoverHTML(formData);
+    // 4-5. Pour chaque template : HTML puis image
+    // (photoCache évite de retélécharger les photos Drive pour le 2e template)
+    var covers = [];
+    for (var i = 0; i < templates.length; i++) {
+      var templateData = JSON.parse(JSON.stringify(formData));
+      templateData.template = templates[i];
 
-    // 5. Convertir en image
-    var imageBlob = convertHTMLToImage(htmlContent, getTemplateDimensions(formData));
+      var htmlContent = generateCoverHTML(templateData);
+      var imageBlob = convertHTMLToImage(htmlContent, getTemplateDimensions(templateData));
+      imageBlob.setName(isBoth ? 'cover-' + templates[i] + '.png' : 'cover-meetup.png');
+
+      covers.push({ label: COVER_TEMPLATES[templates[i]], blob: imageBlob });
+    }
 
     // 6. Créer lien d'édition court
     var editLink = createEditLinkFromFileId(dataFileId);
 
     // 7. Envoyer email
-    sendCoverEmail(formData, imageBlob, editLink);
+    sendCoverEmail(formData, covers, editLink);
 
-    Logger.log('✅ Cover générée et envoyée avec succès!');
+    Logger.log('✅ ' + covers.length + ' cover(s) générée(s) et envoyée(s) avec succès!');
     return {
       success: true,
-      message: 'Cover générée et envoyée par email!',
+      message: (isBoth ? 'Covers générées' : 'Cover générée') + ' et envoyée(s) par email!',
       editLink: editLink,
       coverId: dataFileId
     };
@@ -245,7 +270,7 @@ function generateAndEmailCover(formData) {
     Logger.log('📍 Stack: ' + error.stack);
 
     // Notification d'erreur enrichie avec toutes les données
-    sendErrorNotification(error, 'generateAndEmailCover - Generation failed', {
+    sendErrorNotification(error, 'generateAndEmailCover - Generation failed (' + templates.join(' + ') + ')', {
       formData: formData,
       dataFileId: dataFileId
     });
@@ -694,23 +719,37 @@ function convertWithCloudFunction(htmlContent, dimensions) {
 // EMAIL SENDING
 // ============================================
 
-function sendCoverEmail(formData, imageBlob, editLink) {
-  var subject = 'Cover Meetup: ' + formData.title;
+// covers : [{ label: 'Universal', blob: Blob }, ...] (1 ou plusieurs images dans le même email)
+function sendCoverEmail(formData, covers, editLink) {
+  var isMulti = covers.length > 1;
+  var subject = (isMulti ? 'Covers Meetup: ' : 'Cover Meetup: ') + formData.title;
+
+  var imagesHtml = '';
+  var attachments = [];
+  var inlineImages = {};
+  covers.forEach(function (cover, index) {
+    var cid = 'cover' + index;
+    inlineImages[cid] = cover.blob;
+    attachments.push(cover.blob);
+    imagesHtml +=
+      '<div style="margin: 30px 0;">' +
+      (isMulti ? '<p style="margin: 0 0 8px; font-weight: bold; color: #3D7A9C;">' + cover.label + '</p>' : '') +
+      '<img src="cid:' + cid + '" style="max-width: 100%; border: 2px solid #E16861; border-radius: 8px;">' +
+      '</div>';
+  });
 
   var htmlBody =
     '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>' +
     '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">' +
-    '<h2 style="color: #3D7A9C;">Votre cover est prete!</h2>' +
+    '<h2 style="color: #3D7A9C;">' + (isMulti ? 'Vos covers sont pretes!' : 'Votre cover est prete!') + '</h2>' +
     '<p>Bonjour,</p>' +
-    '<p>Voici la cover generee pour le meetup <strong>' + formData.title + '</strong>.</p>' +
-    '<div style="margin: 30px 0;">' +
-    '<img src="cid:cover" style="max-width: 100%; border: 2px solid #E16861; border-radius: 8px;">' +
-    '</div>' +
+    '<p>' + (isMulti ? 'Voici les covers generees' : 'Voici la cover generee') + ' pour le meetup <strong>' + formData.title + '</strong>.</p>' +
+    imagesHtml +
     '<div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">' +
     '<h3 style="margin-top: 0; color: #3D7A9C;">Besoin de modifier?</h3>' +
-    '<p>Cliquez sur le lien ci-dessous pour modifier et regenerer la cover:</p>' +
+    '<p>Cliquez sur le lien ci-dessous pour modifier et regenerer ' + (isMulti ? 'les covers' : 'la cover') + ':</p>' +
     '<a href="' + editLink + '" style="display: inline-block; background: #E16861; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin-top: 10px;">' +
-    'Modifier cette cover' +
+    (isMulti ? 'Modifier ces covers' : 'Modifier cette cover') +
     '</a>' +
     '</div>' +
     '<p style="color: #999; font-size: 11px; margin-top: 30px;">' +
@@ -719,12 +758,12 @@ function sendCoverEmail(formData, imageBlob, editLink) {
     '</div>';
 
   var plainBody =
-    'Votre cover est prête!\n\n' +
+    (isMulti ? 'Vos covers sont prêtes!' : 'Votre cover est prête!') + '\n\n' +
     'Meetup: ' + formData.title + '\n' +
     'Date: ' + formData.date + '\n' +
     'Heure: ' + formData.time + '\n\n' +
-    'Modifier cette cover: ' + editLink + '\n\n' +
-    'L\'image est en pièce jointe.';
+    (isMulti ? 'Modifier ces covers: ' : 'Modifier cette cover: ') + editLink + '\n\n' +
+    (isMulti ? 'Les images sont en pièce jointe.' : 'L\'image est en pièce jointe.');
 
   GmailApp.sendEmail(
     formData.email,
@@ -732,10 +771,8 @@ function sendCoverEmail(formData, imageBlob, editLink) {
     plainBody,
     {
       htmlBody: htmlBody,
-      attachments: [imageBlob],
-      inlineImages: {
-        cover: imageBlob
-      },
+      attachments: attachments,
+      inlineImages: inlineImages,
       name: CONFIG.EMAIL_FROM_NAME
     }
   );
