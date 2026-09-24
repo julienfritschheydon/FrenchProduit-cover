@@ -869,18 +869,16 @@ function validateFormData(data) {
     throw new Error('Email invalide. Format attendu: exemple@domaine.com');
   }
 
-  // Valider speakers
-  if (!data.speakers || data.speakers.length === 0) {
-    throw new Error('Au moins un speaker est requis');
-  }
-
-  // Valider que speakers est un array (pas un string JSON)
+  // Speakers optionnels (ex: apéro) ; si présents, doit être un array (pas un string JSON)
   if (typeof data.speakers === 'string') {
     try {
       data.speakers = JSON.parse(data.speakers);
     } catch (e) {
       throw new Error('Format speakers invalide');
     }
+  }
+  if (!data.speakers) {
+    data.speakers = [];
   }
 }
 

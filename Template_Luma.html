@@ -135,6 +135,11 @@
       line-height: 48px;
     }
 
+    /* Sans speaker : le titre descend pour occuper la zone laissée vide */
+    .title-wrap.no-speakers {
+      top: 540px;
+    }
+
     .separator-event {
       width: 108px;
       height: 7px;
@@ -391,7 +396,7 @@
         titleClass = 'long-title';
       }
     ?>
-    <div class="title-wrap">
+    <div class="title-wrap<?= data.speakers.length === 0 ? ' no-speakers' : '' ?>">
       <p class="<?= titleClass ?>">
         <?= data.title ?>
       </p>
@@ -406,6 +411,7 @@
     <?
       var speakerCountLuma = Math.min(data.speakers.length, 4);
     ?>
+    <? if (speakerCountLuma > 0) { ?>
     <div class="speakers-row count-<?= speakerCountLuma ?>">
       <? for (var i = 0; i < data.speakers.length && i < 4; i++) {
            var speaker = data.speakers[i];
@@ -426,6 +432,7 @@
       </div>
       <? } ?>
     </div>
+    <? } ?>
 
     <div class="footer-row">
       <div class="footer-col">

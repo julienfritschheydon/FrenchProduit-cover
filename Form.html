@@ -672,15 +672,22 @@
         <!-- Speakers -->
         <h2 style="color: #3D7A9C; margin: 30px 0 20px; font-size: 20px;">🎤 Speakers</h2>
 
-        <div class="speakers-section">
-          <div id="speakersContainer">
-            <!-- Les speakers seront ajoutés ici dynamiquement -->
-          </div>
+        <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 15px; cursor: pointer;">
+          <input type="checkbox" id="noSpeakers" name="noSpeakers" style="width: auto; margin: 0;">
+          <span>Pas de speaker (apéro, networking…)</span>
+        </label>
 
-          <button type="button" class="btn-add-speaker" id="addSpeakerBtn">
-            + Ajouter un speaker
-          </button>
-        </div>
+        <fieldset id="speakersFields" style="border: 0; padding: 0; margin: 0; min-width: 0;">
+          <div class="speakers-section">
+            <div id="speakersContainer">
+              <!-- Les speakers seront ajoutés ici dynamiquement -->
+            </div>
+
+            <button type="button" class="btn-add-speaker" id="addSpeakerBtn">
+              + Ajouter un speaker
+            </button>
+          </div>
+        </fieldset>
 
         <!-- Email -->
         <h2 style="color: #3D7A9C; margin: 30px 0 20px; font-size: 20px;">📧 Envoi</h2>
@@ -900,6 +907,13 @@
 
       // Ajouter les écouteurs d'événements
       console.log('🎯 Ajout des écouteurs d\'événements...');
+
+      const noSpeakersCheckbox = document.getElementById('noSpeakers');
+      if (noSpeakersCheckbox) {
+        noSpeakersCheckbox.addEventListener('change', function () {
+          setNoSpeakers(this.checked);
+        });
+      }
 
       const addSpeakerBtn = document.getElementById('addSpeakerBtn');
       if (addSpeakerBtn) {
@@ -1235,6 +1249,17 @@
     // SPEAKER MANAGEMENT
     // ============================================
 
+    // Événement sans speaker : masque la section et désactive ses champs (plus de "required")
+    function setNoSpeakers(checked) {
+      const checkbox = document.getElementById('noSpeakers');
+      const fields = document.getElementById('speakersFields');
+      if (checkbox) checkbox.checked = checked;
+      if (fields) {
+        fields.disabled = checked;
+        fields.style.display = checked ? 'none' : '';
+      }
+    }
+
     function addSpeaker() {
       console.log('🎤 addSpeaker() appelée, speakerCount actuel:', speakerCount);
 
@@ -1553,7 +1578,8 @@
       };
 
       // Collecter speakers
-      for (let i = 1; i <= speakerCount; i++) {
+      const noSpeakers = document.getElementById('noSpeakers').checked;
+      for (let i = 1; !noSpeakers && i <= speakerCount; i++) {
         const name = formData.get('speaker_' + i + '_name');
         const title = formData.get('speaker_' + i + '_title');
         const photoData = document.getElementById('speaker_' + i + '_photo_data').value;
@@ -1583,7 +1609,7 @@
         return false;
       }
 
-      if (data.speakers.length === 0) {
+      if (data.speakers.length === 0 && !document.getElementById('noSpeakers').checked) {
         showAlert('Au moins un speaker est requis', 'error');
         return false;
       }
@@ -1789,6 +1815,11 @@
           } catch (e) {
             console.log('❌ Erreur conversion time:', e);
           }
+        }
+
+        // Événement sans speaker
+        if (!editData.speakers || editData.speakers.length === 0) {
+          setNoSpeakers(true);
         }
 
         // Charger speakers

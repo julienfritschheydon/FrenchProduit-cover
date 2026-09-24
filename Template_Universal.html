@@ -469,6 +469,7 @@
       </div>
       <? } ?>
 
+      <? if (numSpeakers > 0) { ?>
       <div class="hosted_by"
         style="position: absolute; left: <?= numSpeakers === 1 ? '160px' : (numSpeakers === 2 ? '180px' : (numSpeakers === 3 ? '220px' : '280px')) ?>;">
         <p style="font-weight:700; margin: 5px 0;">Animée par</p>
@@ -489,6 +490,7 @@
         </p>
         <? } ?>
       </div>
+      <? } ?>
 
       <div class="logo-signature">
         <svg width="95" height="120" viewBox="0 0 142 180" fill="none" xmlns="http://www.w3.org/2000/svg">
